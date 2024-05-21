@@ -3,7 +3,7 @@
 #include<irrlicht/irrlicht.h>
 #include<memory>
 #include<vector>
-//#include<cstdlib>
+#include<cstdint>
 
 
 struct GameEngine {
@@ -18,6 +18,7 @@ struct GameEngine {
         if (!device) throw std::runtime_error("Can't initialize irrlicht device");
 
         device->setWindowCaption(L"window - IrrEngine");
+        sceneMan_->addCameraSceneNodeFPS();
     }
 
 // Methods
@@ -32,6 +33,21 @@ struct GameEngine {
     { 
         sceneMan_->drawAll();
         guiEnv_->drawAll();
+    }
+
+    irr::scene::ISceneNode* createShpere()
+    {
+        irr::scene::ISceneNode* node = sceneMan_->addSphereSceneNode();
+        if (!node) throw std::runtime_error("Couldn't create sphere");
+
+        auto* texture { videoDriver_->getTexture("media/wall.bmp") };
+        if (!texture) throw std::runtime_error("Couldn't create texture");
+
+        node->setPosition(irr::core::vector3df(0, 0, 0));
+        node->setMaterialTexture(0, texture);
+        node->setMaterialFlag(irr::video::EMF_LIGHTING, false);
+        
+        return node;
     }
 
 private:
@@ -63,15 +79,9 @@ private:
 };
 
 
-struct Entity_t {
+// Manager
 
-    char c_ {'@'};
-
-private:
-    std::size_t id_ { ++NEXT_EID };
-    inline static std::size_t NEXT_EID;
-};
-
+template<typename TYPE>
 struct EntityManager_t {
 
     static constexpr std::size_t DEFAULT_INITIAL_ENTITIES {100};
@@ -81,31 +91,98 @@ struct EntityManager_t {
         entities_.reserve(size);
     }
 
-    Entity_t& createEntity() { return entities_.emplace_back(); }
+    TYPE& createEntity() { return entities_.emplace_back(); }
+
+    template<typename CALLABLE>
+    void forAll(CALLABLE&& process)
+    {
+        std::for_each(begin(entities_), end(entities_), process);
+    }
 
 private:
-    std::vector<Entity_t> entities_;
+    std::vector<TYPE> entities_;
 };
 
 
-int main(void){ //int argc, const char** argv)
+// Components
+
+struct PhysicsCmp_t {
+    float x{}, y{}, z{};
+    float vx{}, vy{}, vz{};
+};
+
+struct RenderCmp_t {
+    irr::scene::ISceneNode* node{nullptr};
+};
+
+struct Entity_t {
+
+    PhysicsCmp_t phycmp;
+    RenderCmp_t rencmp;
+
+private:
+    std::size_t id_ { ++NEXT_EID };
+    inline static std::size_t NEXT_EID;
+};
+
+
+// Systems
+
+struct PhysicsSys_t {
+
+    explicit PhysicsSys_t() = default;
+
+    void update(EntityManager_t<Entity_t>& man)
+    { 
+        man.forAll([man](Entity_t& e)
+        {
+            e.phycmp.x += e.phycmp.vx;
+            e.phycmp.y += e.phycmp.vy;
+            e.phycmp.z += e.phycmp.vz;
+        }); 
+    }
+};
+
+struct RenderSys_t {
+
+    explicit RenderSys_t() = default;
+
+    void update(EntityManager_t<Entity_t>& man, GameEngine& gfx)
+    {
+        man.forAll([&man](Entity_t& e)
+        {
+            e.rencmp.node->setPosition(irr::core::vector3df{e.phycmp.x, e.phycmp.y, e.phycmp.z});
+        });
+
+        gfx.beginScene();
+        gfx.drawAll();
+        gfx.endScene();
+    }
+};
+
+
+
+int main(void){
 try {
 
-    EntityManager_t entMan{10};
-    auto& entity = entMan.createEntity();
 
+    EntityManager_t<Entity_t> EntMan{10};
+    PhysicsSys_t PhySys;
+    RenderSys_t  RenSys;
 
     GameEngine device{640, 360};
     device.addStaticText();
 
+    auto& entity = EntMan.createEntity();
+    entity.rencmp.node = device.createShpere();
+    entity.phycmp.z  = 10.f;
+    entity.phycmp.vz = .02f;
+
     while (device.run())
     {
-        device.beginScene();
-        device.drawAll();
-        device.endScene();
+        RenSys.update(EntMan, device);
+        PhySys.update(EntMan);
     }
-    
-    //int a = std::atoi(argv[1]);  //while (a--){ auto* n = new long long; }
 
     return 0;
 
