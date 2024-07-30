@@ -6,18 +6,18 @@
 #include<cstdint>
 
 
-struct GameEngine {
+struct GFrameDevice_t {
 
     using u32 = irr::u32;
 
 // Constructor
-    explicit GameEngine(u32 w, u32 h)
-    : width_{w}, height_{h} 
+    explicit GFrameDevice_t(u32 w, u32 h)
+    : width_{w}, height_{h}
     {   
         irr::IrrlichtDevice* device { device_.get() };
-        if (!device) throw std::runtime_error("Can't initialize irrlicht device");
+        if (!device) throw std::runtime_error("Can't initialize irrlicht device"); // Check!!
 
-        device->setWindowCaption(L"window - IrrEngine");
+        device->setWindowCaption(L"window - Irrlicht demo");
         sceneMan_->addCameraSceneNodeFPS();
     }
 
@@ -35,7 +35,7 @@ struct GameEngine {
         guiEnv_->drawAll();
     }
 
-    irr::scene::ISceneNode* createShpere()
+    irr::scene::ISceneNode* createSphere()
     {
         irr::scene::ISceneNode* node = sceneMan_->addSphereSceneNode();
         if (!node) throw std::runtime_error("Couldn't create sphere");
@@ -62,25 +62,26 @@ private:
     std::unique_ptr<irr::IrrlichtDevice, void(*)(irr::IrrlichtDevice*)> /*<type, destroyer>*/
     device_ {
         irr::createDevice(
-                irr::video::EDT_SOFTWARE,                           // deviceType
-                irr::core::dimension2d<irr::u32>(width_, height_),  // windowSize
-                16,         // bits_per_pixel
-                false,      // fullscreen
-                false,      // stencilbuffer
-                false,      // vsync
-                0)          // eventReceiver
+                irr::video::EDT_SOFTWARE,                           // deviceType: This can currently be the Null-device, one of the two software renderers, D3D8, D3D9, or OpenGL. In this example we use EDT_SOFTWARE, but to try out, you might want to change it to EDT_BURNINGSVIDEO, EDT_NULL, EDT_DIRECT3D8, EDT_DIRECT3D9, or EDT_OPENGL.
+                irr::core::dimension2d<irr::u32>(width_, height_),  // windowSize: Size of the Window or screen in FullScreenMode to be created
+                16,         // bits_per_pixel: Amount of color bits per pixel. This should be 16 or 32. The parameter is often ignored when running in windowed mode.
+                false,      // fullscreen:     Specifies if we want the device to run in fullscreen mode or not.
+                false,      // stencilbuffer:  Specifies if we want to use the stencil buffer (for drawing shadows).
+                false,      // vsync:          Specifies if we want to have vsync enabled, this is only useful in fullscreen mode
+                0)          // eventReceiver:  An object to receive events. We do not want to use this parameter here, and set it to 
         ,   destroyDevice
     };
 
-// Pointers const(non-modifiable address): to the VideoDriver, the SceneManager and the graphical user interface environment
+// Pointers const(non-modifiable address): to the VideoDriver, the SceneManager and the graphical user interface environment.
     irr::video::IVideoDriver * const videoDriver_ { device_.get()? device_->getVideoDriver()    : nullptr };
     irr::scene::ISceneManager* const sceneMan_    { device_.get()? device_->getSceneManager()   : nullptr };
     irr::gui::IGUIEnvironment* const guiEnv_      { device_.get()? device_->getGUIEnvironment() : nullptr };
 };
 
 
-// Manager
+namespace ENGINE {
 
+// Manager
 template<typename TYPE>
 struct EntityManager_t {
 
@@ -103,9 +104,12 @@ private:
     std::vector<TYPE> entities_;
 };
 
+} // namespace ECS
+
+
+namespace GAME {
 
 // Components
-
 struct PhysicsCmp_t {
     float x{}, y{}, z{};
     float vx{}, vy{}, vz{};
@@ -121,7 +125,7 @@ struct Entity_t {
     RenderCmp_t rencmp;
 
 private:
-    std::size_t id_ { ++NEXT_EID };
+    std::size_t id_{++NEXT_EID};
     inline static std::size_t NEXT_EID;
 };
 
@@ -132,7 +136,7 @@ struct PhysicsSys_t {
 
     explicit PhysicsSys_t() = default;
 
-    void update(EntityManager_t<Entity_t>& man)
+    void update(ENGINE::EntityManager_t<Entity_t>& man)
     { 
         man.forAll([man](Entity_t& e)
         {
@@ -147,7 +151,7 @@ struct RenderSys_t {
 
     explicit RenderSys_t() = default;
 
-    void update(EntityManager_t<Entity_t>& man, GameEngine& gfx)
+    void update(ENGINE::EntityManager_t<Entity_t>& man, GFrameDevice_t& gfx)
     {
         man.forAll([&man](Entity_t& e)
         {
@@ -161,20 +165,22 @@ struct RenderSys_t {
 };
 
 
+} // namespace GAME
 
-int main(void){
+
+int 
+main(void){
 try {
 
+    ENGINE::EntityManager_t<GAME::Entity_t> EntMan{10};
+    GAME::PhysicsSys_t PhySys;
+    GAME::RenderSys_t  RenSys;
 
-    EntityManager_t<Entity_t> EntMan{10};
-    PhysicsSys_t PhySys;
-    RenderSys_t  RenSys;
-
-    GameEngine device{640, 360};
+    GFrameDevice_t device{640, 360};
     device.addStaticText();
 
     auto& entity = EntMan.createEntity();
-    entity.rencmp.node = device.createShpere();
+    entity.rencmp.node = device.createSphere();
     entity.phycmp.z  = 10.f;
     entity.phycmp.vz = .02f;
 
