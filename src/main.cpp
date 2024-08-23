@@ -2,86 +2,17 @@
 #include<stdexcept>
 #include<memory>
 #include<cstdint>
-#include<irrlicht/irrlicht.h>
-#include<engine/entitymanager.hpp>
-
-
-struct GFrameDevice_t {
-
-    using u32 = irr::u32;
-
-// Constructor
-    explicit GFrameDevice_t(u32 w, u32 h)
-    : width_{w}, height_{h}
-    {   
-        irr::IrrlichtDevice* device { device_.get() };
-        if (!device) throw std::runtime_error("Can't initialize irrlicht device"); // Check!!
-
-        device->setWindowCaption(L"window - Irrlicht demo");    // Title
-        sceneMan_->addCameraSceneNodeFPS();                     // Add camera!
-    }
-
-// Methods
-    void addStaticText(){
-        guiEnv_->addStaticText(L"Hello world!!", irr::core::rect<irr::s32>(10, 10, 260, 22), true);
-    }
-
-    bool run() const  { return device_->run();      }
-    void beginScene() { videoDriver_->beginScene(true, true, irr::video::SColor(255,100,101,140)); } // The beginScene call clears the screen with a color and the depth buffer
-    void endScene()   { videoDriver_->endScene();   }
-    void drawAll()
-    { 
-        sceneMan_->drawAll();
-        guiEnv_->drawAll();
-    }
-
-    irr::scene::ISceneNode* createSphere()
-    {
-        irr::scene::ISceneNode* node = sceneMan_->addSphereSceneNode();
-        if (!node) throw std::runtime_error("Couldn't create sphere");
-
-        auto* texture { videoDriver_->getTexture("/Users/eliezerzuniga/Documents/programacion/c++/irrlicht/GameEngine-Irrlicht/media/wall.bmp") };
-        if (!texture) throw std::runtime_error("Couldn't create texture");
-
-        node->setPosition(irr::core::vector3df(0, 0, 0));
-        node->setMaterialTexture(0, texture);
-        node->setMaterialFlag(irr::video::EMF_LIGHTING, false);
-        
-        return node;
-    }
-
-private:
-
-// Widow dimension
-    u32 width_{}, height_{};
-
-// Resource destroyer
-    inline static void destroyDevice(irr::IrrlichtDevice* dv) { dv->drop(); }
-
-    // unique_ptr check if the pointer isn't null to call destructor.
-    std::unique_ptr<irr::IrrlichtDevice, void(*)(irr::IrrlichtDevice*)> /*<type, destroyer>*/
-    device_ {
-        irr::createDevice(
-                irr::video::EDT_OPENGL,                           // deviceType: This can currently be the Null-device, one of the two software renderers, D3D8, D3D9, or OpenGL. In this example we use EDT_SOFTWARE, but to try out, you might want to change it to EDT_BURNINGSVIDEO, EDT_NULL, EDT_DIRECT3D8, EDT_DIRECT3D9, or EDT_OPENGL.
-                irr::core::dimension2d<irr::u32>(width_, height_),  // windowSize: Size of the Window or screen in FullScreenMode to be created
-                32,         // bits_per_pixel: Amount of color bits per pixel. This should be 16 or 32. The parameter is often ignored when running in windowed mode.
-                false,      // fullscreen:     Specifies if we want the device to run in fullscreen mode or not.
-                false,      // stencilbuffer:  Specifies if we want to use the stencil buffer (for drawing shadows).
-                false,      // vsync:          Specifies if we want to have vsync enabled, this is only useful in fullscreen mode.
-                0)          // eventReceiver:  An object to receive events. We do not want to use this parameter here, and set it to 0.
-        ,   destroyDevice
-    };
-
-// Pointers const(non-modifiable address): to the VideoDriver, the SceneManager and the graphical user interface environment.
-    irr::video::IVideoDriver * const videoDriver_ { device_.get()? device_->getVideoDriver()    : nullptr };
-    irr::scene::ISceneManager* const sceneMan_    { device_.get()? device_->getSceneManager()   : nullptr };
-    irr::gui::IGUIEnvironment* const guiEnv_      { device_.get()? device_->getGUIEnvironment() : nullptr };
-};
+#include<engine/man/entitymanager.hpp>
+#include<engine/util/gframe.hpp>
 
 
 namespace GAME {
 
 // Components
+struct AICmp_t {
+    std::size_t eid;
+};
+
 struct PhysicsCmp_t {
     float x{}, y{}, z{};
     float vx{}, vy{}, vz{};
@@ -107,7 +38,7 @@ struct PhysicsSys_t {
 
     explicit PhysicsSys_t() = default;
 
-    void update(ENGINE::EntityManager_t<Entity_t>& man)
+    void update(UVENGINE::EntityManager_t<Entity_t>& man)
     { 
         man.forAll([man](Entity_t& e)
         {
@@ -122,7 +53,7 @@ struct RenderSys_t {
 
     explicit RenderSys_t() = default;
 
-    void update(ENGINE::EntityManager_t<Entity_t>& man, GFrameDevice_t& gfx)
+    void update(UVENGINE::EntityManager_t<Entity_t>& man, UVENGINE::GFrameDevice_t& gfx)
     {
         man.forAll([&man](Entity_t& e)
         {
@@ -143,11 +74,24 @@ int
 main(void){
 try {
 
-    ENGINE::EntityManager_t<GAME::Entity_t> EntMan{10};
+    UVENGINE::EntityManager_t<GAME::Entity_t> EntMan{10};
+//    ENGINE::ComponentStorage_t<GAME::PhysicsCmp_t, GAME::RenderCmp_t, GAME::AICmp_t, 10> cmpStorage{};
+//
+//    std::cout<<cmpStorage.getMask<GAME::PhysicsCmp_t>()<<'\n';
+//    std::cout<<cmpStorage.getMask<GAME::RenderCmp_t>()<<'\n';
+//    std::cout<<cmpStorage.getMask<GAME::AICmp_t>()<<'\n';
+//
+//    auto& phyContainer { cmpStorage.getContainer<GAME::PhysicsCmp_t>() };
+//    auto key = phyContainer.insert(GAME::PhysicsCmp_t{0,0,0,1,1,1});
+//
+//    for (auto& phycmp : phyContainer){
+//        std::cout<<phycmp.vx<<phycmp.vy<<phycmp.vy<<'\n';
+//    }
+    
     GAME::PhysicsSys_t PhySys;
     GAME::RenderSys_t  RenSys;
 
-    GFrameDevice_t device{640, 360};
+    UVENGINE::GFrameDevice_t device{640, 360};
     device.addStaticText();
 
     auto& entity = EntMan.createEntity();

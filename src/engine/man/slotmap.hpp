@@ -6,7 +6,7 @@
 //#define NDEBUG
 #include<cassert>
 
-namespace ENGINE {
+namespace UVENGINE {
 
 template<typename DATA_TYPE, std::size_t CAPACITY=10, typename INDEX_TYPE=std::size_t>
 struct Slotmap_t {
@@ -24,10 +24,12 @@ struct Slotmap_t {
     [[nodiscard]] constexpr uint_type capacity() const noexcept { return CAPACITY; }
 
 // ITERATORS TO DATA
-    [[nodiscard]] constexpr typename std::array<DATA_TYPE, CAPACITY>::iterator begin()              noexcept { return data_.begin();          }
-    [[nodiscard]] constexpr typename std::array<DATA_TYPE, CAPACITY>::iterator end()                noexcept { return data_.begin() + size_;  }
-    [[nodiscard]] constexpr typename std::array<DATA_TYPE, CAPACITY>::const_iterator cbegin() const noexcept { return data_.cbegin();         }
-    [[nodiscard]] constexpr typename std::array<DATA_TYPE, CAPACITY>::const_iterator cend()   const noexcept { return data_.cbegin() + size_; }
+    [[nodiscard]] constexpr typename std::array<DATA_TYPE, CAPACITY>::iterator begin()              noexcept { return data_.begin();         }
+    [[nodiscard]] constexpr typename std::array<DATA_TYPE, CAPACITY>::iterator end()                noexcept { return data_.begin() + size_; }
+    [[nodiscard]] constexpr typename std::array<DATA_TYPE, CAPACITY>::const_iterator begin()  const noexcept { return data_.begin();         }
+    [[nodiscard]] constexpr typename std::array<DATA_TYPE, CAPACITY>::const_iterator end()    const noexcept { return data_.begin() + size_; }
+    [[nodiscard]] constexpr typename std::array<DATA_TYPE, CAPACITY>::const_iterator cbegin() const noexcept { return data_.cbegin();        }
+    [[nodiscard]] constexpr typename std::array<DATA_TYPE, CAPACITY>::const_iterator cend()   const noexcept { return data_.cbegin() + size_;}
 
 // INSERT
     [[nodiscard]] constexpr key_type insert(data_type&& element) // R-values only!, no universal reference (the type is deducted already).
@@ -167,4 +169,4 @@ private:
     static constexpr uint_type MAX_VALUE_ { std::numeric_limits<uint_type>::max() };
 };
 
-} // namespace ENGINE
+} // namespace UVENGINE

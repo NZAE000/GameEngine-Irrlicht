@@ -1,7 +1,8 @@
 #pragma once
 #include<vector>
+#include "componentstorage.hpp"
 
-namespace ENGINE {
+namespace UVENGINE {
 
 // Manager
 template<typename TYPE>
@@ -24,6 +25,7 @@ struct EntityManager_t {
 
 private:
     std::vector<TYPE> entities_;
+    //ComponentStorage_t<>
 };
 
-} // namespace ECS
+} // namespace UVENGINE
