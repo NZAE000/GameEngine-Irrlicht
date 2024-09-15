@@ -69,13 +69,14 @@ struct EntityManager_t {
 
     Entity_t& createEntity() { return entities_.emplace_back(); }
 
-    template<typename CMP>
-    CMP& addComponent(Entity_t& entity)
+
+    template<typename CMP, typename... PARAMS>
+    CMP& addComponent(Entity_t& entity, PARAMS&&... args)
     {
         if ( entity.template hasCmp<CMP>() ) // Check if the entity has  cmp
             return getComponent<CMP>(entity);
 
-        return createComponent<CMP>(entity);
+        return createComponent<CMP>(entity, args...);
     }
 
     template<typename CMP>
@@ -94,11 +95,11 @@ struct EntityManager_t {
 
 private:
 
-    template<typename CMP>
-    CMP& createComponent(Entity_t& entity)
+    template<typename CMP, typename... PARAMS>
+    CMP& createComponent(Entity_t& entity, PARAMS&&... args)
     {
         auto& storage { cmpStorage.template getContainer<CMP>() };
-        auto key { storage.insert(CMP{}) }; // Create new cmp data
+        auto key { storage.insert( CMP{std::forward<PARAMS>(args)...} ) }; // Create new cmp data (std::forward to decide if pass L or R value reference)
         entity.template addCmp<CMP>(key);   // Add key into entity
         return storage[key]; // Get cmp data with the key and return;
     }

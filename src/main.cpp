@@ -6,7 +6,8 @@
 #include<type_traits>
 #include<engine/util/gframe.hpp>
 #include<game/util/typealiases.hpp>
-
+#include<game/sys/rendersys.hpp>
+#include<game/sys/physicssys.hpp>
 
 
 int 
@@ -26,9 +27,22 @@ try {
     seetype(UVENGINE::CmpStorage_t::Storage_t{});
     
 
-    UVENGINE::EManager_t entityMan {};
-    auto& ent1 { entityMan.createEntity() };
-    auto& phycmp = entityMan.addComponent<GAME::PhysicsCmp_t>(ent1);
+    UVENGINE::EManager_t EntityMan {};
+    UVENGINE::GFrameDevice_t IrrDevice {640, 360};
+    GAME::RenderSys_t RenderSys{};
+    GAME::PhysicsSys_t PhysicsSys{};
+
+    auto& ent1 { EntityMan.createEntity() };
+    auto& phycmp = EntityMan.addComponent<GAME::PhysicsCmp_t>(ent1, GAME::PhysicsCmp_t{.x=1.0f, .y=1.0f, .z=10.0f});
+    auto& rencmp = EntityMan.addComponent<GAME::RenderCmp_t>(ent1, IrrDevice.createSphere());
+
+
+    while(IrrDevice.run())
+    {
+        PhysicsSys.update(EntityMan);
+        RenderSys.update(EntityMan, IrrDevice);
+    }
+
     std::cout<<"x: "<<phycmp.x<<" y: "<<phycmp.y<<" z: "<<phycmp.z<<'\n';
     
 
