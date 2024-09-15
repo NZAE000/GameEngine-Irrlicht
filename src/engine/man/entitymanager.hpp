@@ -4,18 +4,86 @@
 
 namespace UVENGINE {
 
-// Manager
-template<typename TYPE>
+
+
+// Manager: CMP_PACK = CmPack_t<cmp1, cmp2, cmp3, ...>  - TAG_PACK = TagPack_t<tag1, tag2, tag3, ...>
+template<typename CMP_PACK, typename TAG_PACK, std::size_t CAPACITY = 100>
 struct EntityManager_t {
 
-    static constexpr std::size_t DEFAULT_INITIAL_ENTITIES {100};
+// Aliases ################################################################
+    template<typename CMP>
+    using key_type     = typename Slotmap_t<CMP, CAPACITY>::key_type;
+    using CmpStorage_t = ComponentStorage_t<CMP_PACK, TAG_PACK, CAPACITY>;
 
-    explicit EntityManager_t(const std::size_t size=DEFAULT_INITIAL_ENTITIES)
-    {
-        entities_.reserve(size);
+    using Tuple_cmps   = typename METAPROG::Replace_with<CMP_PACK, std::tuple>::type;          // CmpPack_t<cmp1, cmp2, cmp3..> to std::tuple<cmp1, cmp2, cmp3, ...>
+    using KeyStorage_t = typename METAPROG::ForAll_types_wrap<Tuple_cmps, key_type>::type;     // std::tuple<cmp1, cmp2, cmp3, ...> to std::tuple<key_type<cmp1>, key_type<cmp2>, key_type<cmp3>, ...>
+
+// ########################################################################
+
+    // Entity for the user!! ################################################
+    struct Entity_t {
+
+        template<typename CMP>
+        void addCmp(key_type<CMP> key)
+        {
+            cmp_mask |= CmpStorage_t::cmp_cfg::template mask<CMP>(); // Set cmp_mask (any bit to 1)
+            std::get<key_type<CMP>>(cmpKeys) = key; // Add key
+        }
+
+        template<typename TAG>
+        void addTag(void) {
+            tag_mask |= CmpStorage_t::tag_cfg::template mask<TAG>(); // Set tag_ mask (any bit to 1)
+        }
+
+        template<typename CMP>
+        bool hasCmp() const noexcept {
+            return cmp_mask & CmpStorage_t::cmp_cfg::template mask<CMP>(); // f. ex: (00010110 & 00010000) = 00010000 = true
+        }
+        template<typename TAG>
+        bool hasTag() const noexcept {
+            return tag_mask & CmpStorage_t::tag_cfg::template mask<TAG>(); // f. ex: (00010110 & 00010000) = 00010000 = true
+        }
+
+        template<typename CMP>
+        [[nodiscard]] key_type<CMP> getCmpKey() const {
+            return std::get<key_type<CMP>>(cmpKeys);
+        }
+
+
+        typename CmpStorage_t::cmp_cfg::mask_type cmp_mask {};
+        typename CmpStorage_t::tag_cfg::mask_type tag_mask {};
+        std::size_t id { ++NEXT_ID }; // Each entity created, set next id.
+
+    private:
+        inline static std::size_t NEXT_ID {0};
+        KeyStorage_t cmpKeys{};
+
+    };
+    // #######################################################################
+
+    static constexpr std::size_t DEFAULT_INITIAL_ENTITIES {CAPACITY};
+
+    explicit EntityManager_t() {
+        entities_.reserve(CAPACITY);
     }
 
-    TYPE& createEntity() { return entities_.emplace_back(); }
+    Entity_t& createEntity() { return entities_.emplace_back(); }
+
+    template<typename CMP>
+    CMP& addComponent(Entity_t& entity)
+    {
+        if ( entity.template hasCmp<CMP>() ) // Check if the entity has  cmp
+            return getComponent<CMP>(entity);
+
+        return createComponent<CMP>(entity);
+    }
+
+    template<typename CMP>
+    CMP& getComponent(Entity_t& entity) 
+    {
+        auto& storage { cmpStorage.template getContainer<CMP>() };
+        return storage[entity.template getCmpKey<CMP>()]; // Get cmp data with the key and return;
+    }
 
     template<typename CALLABLE>
     void forAll(CALLABLE&& process)
@@ -23,9 +91,20 @@ struct EntityManager_t {
         std::for_each(begin(entities_), end(entities_), process);
     }
 
+
 private:
-    std::vector<TYPE> entities_;
-    //ComponentStorage_t<>
+
+    template<typename CMP>
+    CMP& createComponent(Entity_t& entity)
+    {
+        auto& storage { cmpStorage.template getContainer<CMP>() };
+        auto key { storage.insert(CMP{}) }; // Create new cmp data
+        entity.template addCmp<CMP>(key);   // Add key into entity
+        return storage[key]; // Get cmp data with the key and return;
+    }
+
+    std::vector<Entity_t> entities_{};
+    CmpStorage_t cmpStorage{};
 };
 
 } // namespace UVENGINE

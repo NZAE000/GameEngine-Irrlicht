@@ -4,9 +4,17 @@
 #include<cstdint>
 #include<engine/man/entitymanager.hpp>
 #include<engine/util/gframe.hpp>
+#include<cassert>
+#include<type_traits>
 
 
 namespace GAME {
+
+// TAGS
+struct TGPlayer_t {};
+struct TGEnemy_t  {};
+struct TGBulle_Tt {};
+struct TGPursue_t {};
 
 // Components
 struct AICmp_t {
@@ -22,7 +30,7 @@ struct RenderCmp_t {
     irr::scene::ISceneNode* node{nullptr};
 };
 
-struct Entity_t {
+/*struct Entity_t {
 
     PhysicsCmp_t phycmp;
     RenderCmp_t rencmp;
@@ -65,45 +73,70 @@ struct RenderSys_t {
         gfx.drawAll();
         gfx.endScene();
     }
-};
+};*/
 
 } // namespace GAME
+
+
+void seetype(auto) { std::cout<<__PRETTY_FUNCTION__<< '\n'; }
 
 
 int 
 main(void){
 try {
 
-    UVENGINE::EntityManager_t<GAME::Entity_t> EntMan{10};
-//    ENGINE::ComponentStorage_t<GAME::PhysicsCmp_t, GAME::RenderCmp_t, GAME::AICmp_t, 10> cmpStorage{};
-//
-//    std::cout<<cmpStorage.getMask<GAME::PhysicsCmp_t>()<<'\n';
-//    std::cout<<cmpStorage.getMask<GAME::RenderCmp_t>()<<'\n';
-//    std::cout<<cmpStorage.getMask<GAME::AICmp_t>()<<'\n';
-//
-//    auto& phyContainer { cmpStorage.getContainer<GAME::PhysicsCmp_t>() };
-//    auto key = phyContainer.insert(GAME::PhysicsCmp_t{0,0,0,1,1,1});
-//
-//    for (auto& phycmp : phyContainer){
-//        std::cout<<phycmp.vx<<phycmp.vy<<phycmp.vy<<'\n';
-//    }
+//    UVENGINE::EntityManager_t<GAME::Entity_t> EntMan{10};
+
+    using CMP_PACK     = UVENGINE::CmpPack_t<GAME::RenderCmp_t, GAME::AICmp_t, GAME::PhysicsCmp_t>;
+    using TAG_PACK     = UVENGINE::TagPack_t<GAME::TGPlayer_t, GAME::TGEnemy_t, GAME::TGBulle_Tt, GAME::TGPursue_t>;
+    using CmpStorage_t = UVENGINE::ComponentStorage_t<CMP_PACK, TAG_PACK>;
+    using EManager_t   = UVENGINE::EntityManager_t<CMP_PACK, TAG_PACK>; 
+
+
+    //CmpStorage_t cmpStorage{};
+    static_assert( CmpStorage_t::cmp_cfg::size() == 3 );
+    static_assert( CmpStorage_t::tag_cfg::size() == 4 );
+    static_assert( CmpStorage_t::cmp_cfg::has<GAME::AICmp_t>() );
+    static_assert( CmpStorage_t::tag_cfg::id<GAME::TGBulle_Tt>() == 2);
+    static_assert( CmpStorage_t::cmp_cfg::mask<GAME::RenderCmp_t, GAME::PhysicsCmp_t>() == 5, "bad mask");
+    static_assert( std::is_same<CmpStorage_t::tag_cfg::mask_type, uint8_t>::value == true );
+    seetype(CmpStorage_t::tag_cfg::mask_type{});
+    seetype(CmpStorage_t::TupleCmp_t{});
+    seetype(CmpStorage_t::Storage_t{});
     
-    GAME::PhysicsSys_t PhySys;
-    GAME::RenderSys_t  RenSys;
+    EManager_t entityMan {};
+    auto& ent1 { entityMan.createEntity() };
+    auto& phycmp = entityMan.addComponent<GAME::PhysicsCmp_t>(ent1);
+    std::cout<<"x: "<<phycmp.x<<" y: "<<phycmp.y<<" z: "<<phycmp.z<<'\n';
+    
 
-    UVENGINE::GFrameDevice_t device{640, 360};
-    device.addStaticText();
-
-    auto& entity = EntMan.createEntity();
-    entity.rencmp.node = device.createSphere();
-    entity.phycmp.z  = 10.f;
-    entity.phycmp.vz = .02f;
-
-    while (device.run())
-    {
-        RenSys.update(EntMan, device);
-        PhySys.update(EntMan);
-    }
+    //std::cout<<cmpStorage.getMask<GAME::PhysicsCmp_t>()<<'\n';
+    //std::cout<<cmpStorage.getMask<GAME::RenderCmp_t>()<<'\n';
+    //std::cout<<cmpStorage.getMask<GAME::AICmp_t>()<<'\n';
+//
+    //auto& phyContainer { cmpStorage.getContainer<GAME::PhysicsCmp_t>() };
+    //auto key = phyContainer.insert(GAME::PhysicsCmp_t{0,0,0,1,1,1});
+//
+    //for (auto& phycmp : phyContainer){
+    //    std::cout<<phycmp.vx<<phycmp.vy<<phycmp.vy<<'\n';
+    //}
+    
+    //GAME::PhysicsSys_t PhySys;
+    //GAME::RenderSys_t  RenSys;
+//
+    //UVENGINE::GFrameDevice_t device{640, 360};
+    //device.addStaticText();
+//
+    //auto& entity = EntMan.createEntity();
+    //entity.rencmp.node = device.createSphere();
+    //entity.phycmp.z  = 10.f;
+    //entity.phycmp.vz = .02f;
+//
+    //while (device.run())
+    //{
+    //    RenSys.update(EntMan, device);
+    //    PhySys.update(EntMan);
+    //}
 
     return 0;
 
