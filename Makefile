@@ -1,6 +1,6 @@
 APP := irrgame
 CC := clang++ -std=c++20
-CCFLAGS := 
+CCFLAGS := -Wall #-Wpedantic -Wextra -Wconversion
 
 
 SRCDIR := src

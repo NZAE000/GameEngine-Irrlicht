@@ -10,9 +10,15 @@ struct PhysicsSys_t {
 
     void update(UVENGINE::EManager_t& Eman)
     { 
-        Eman.forAll([&Eman](UVENGINE::Entity_t& entity)
+        //Eman.forAll([&Eman](UVENGINE::Entity_t& entity)
+        //{
+        //    auto& phycmp = Eman.getComponent<GAME::PhysicsCmp_t>(entity);
+        //    phycmp.x += phycmp.vx;
+        //    phycmp.y += phycmp.vy;
+        //    phycmp.z += phycmp.vz;
+        //});
+        Eman.forEach<GAME::PhysicsCmp_t>([](UVENGINE::Entity_t& entity, GAME::PhysicsCmp_t& phycmp)
         {
-            auto& phycmp = Eman.getComponent<GAME::PhysicsCmp_t>(entity);
             phycmp.x += phycmp.vx;
             phycmp.y += phycmp.vy;
             phycmp.z += phycmp.vz;

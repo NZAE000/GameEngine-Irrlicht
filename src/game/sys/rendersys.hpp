@@ -10,13 +10,18 @@ struct RenderSys_t {
 
     void update(UVENGINE::EManager_t& Eman, UVENGINE::GFrameDevice_t& gfx)
     {
-        Eman.forAll([&Eman](UVENGINE::Entity_t& entity)
+        //Eman.forAll([&Eman](UVENGINE::Entity_t& entity)
+        //{
+        //    auto&       rencmp = Eman.getComponent<GAME::RenderCmp_t>(entity);
+        //    auto const& phycmp = Eman.getComponent<GAME::PhysicsCmp_t>(entity);
+//
+        //    rencmp.node->setPosition(irr::core::vector3df{phycmp.x, phycmp.y, phycmp.z});
+        //    //e.rencmp.node->getPosition();
+        //});
+        Eman.forEach<GAME::RenderCmp_t, GAME::PhysicsCmp_t>
+        ([](UVENGINE::Entity_t& entity, GAME::RenderCmp_t& rencmp, GAME::PhysicsCmp_t const& phycmp)
         {
-            auto& rencmp = Eman.getComponent<GAME::RenderCmp_t>(entity);
-            auto& phycmp = Eman.getComponent<GAME::PhysicsCmp_t>(entity);
-
             rencmp.node->setPosition(irr::core::vector3df{phycmp.x, phycmp.y, phycmp.z});
-            //e.rencmp.node->getPosition();
         });
 
         gfx.beginScene();

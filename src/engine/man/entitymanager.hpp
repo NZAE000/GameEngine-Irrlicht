@@ -20,8 +20,7 @@ struct EntityManager_t {
 
 // ########################################################################
 
-    // Entity for the user!! ################################################
-    struct Entity_t {
+    struct Entity_t { // Entity for the user!! ################################################
 
         template<typename CMP>
         void addCmp(key_type<CMP> key)
@@ -58,14 +57,12 @@ struct EntityManager_t {
         inline static std::size_t NEXT_ID {0};
         KeyStorage_t cmpKeys{};
 
-    };
-    // #######################################################################
+    }; // ########################################################################################
+
 
     static constexpr std::size_t DEFAULT_INITIAL_ENTITIES {CAPACITY};
 
-    explicit EntityManager_t() {
-        entities_.reserve(CAPACITY);
-    }
+    explicit EntityManager_t() { entities_.reserve(CAPACITY); }
 
     Entity_t& createEntity() { return entities_.emplace_back(); }
 
@@ -98,6 +95,16 @@ struct EntityManager_t {
     void forAll(CALLABLE&& process)
     {
         std::for_each(begin(entities_), end(entities_), process);
+    }
+
+    template<typename... CMPS> // Update entities with specified components
+    void forEach(auto&& process)
+    {
+        std::for_each(begin(entities_), end(entities_), [&](auto& entity)
+        {
+            if ( true && ( ... && entity.template hasCmp<CMPS>() ) )
+                process(entity, getComponent<CMPS>(entity)...);
+        });
     }
 
 

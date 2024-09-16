@@ -74,7 +74,7 @@ struct ComponentStorage_t {
     //}
 
 private:
-// Container of different components
+// Container of different components (When ComponentStorage_t is instantiated, storage will has all container of all cmps)
     Storage_t components_{};
     //Tuple_t<Slotmap_t<CMP1, CAPACITY>, Slotmap_t<CMP2, CAPACITY>, Slotmap_t<CMP3, CAPACITY>> components_{};
 //
