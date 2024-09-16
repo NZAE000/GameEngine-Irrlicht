@@ -34,7 +34,7 @@ try {
 
     auto& ent1 { EntityMan.createEntity() };
     auto& phycmp = EntityMan.addComponent<GAME::PhysicsCmp_t>(ent1, GAME::PhysicsCmp_t{.z=10.0f, .vz=.01f});
-    EntityMan.addComponent<GAME::RenderCmp_t>(ent1, IrrDevice.createSphere());
+    EntityMan.addComponent<GAME::RenderCmp_t>(ent1, IrrDevice.createSphere("/Users/eliezerzuniga/Documents/programacion/c++/irrlicht/GameEngine-Irrlicht/media/wall.bmp"));
 
     auto const& rencmp = EntityMan.getComponent<GAME::RenderCmp_t>(ent1);
 

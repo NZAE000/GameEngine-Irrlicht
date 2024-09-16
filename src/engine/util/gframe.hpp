@@ -2,6 +2,7 @@
 #include<irrlicht/irrlicht.h>
 #include<memory>
 #include<stdexcept>
+#include<string_view>
 
 namespace UVENGINE  
 {   
@@ -34,12 +35,12 @@ namespace UVENGINE
         guiEnv_->drawAll();
     }
 
-    irr::scene::ISceneNode* createSphere()
+    irr::scene::ISceneNode* createSphere(std::string_view path_texture)
     {
         irr::scene::ISceneNode* node = sceneMan_->addSphereSceneNode();
         if (!node) throw std::runtime_error("Couldn't create sphere");
 
-        auto* texture { videoDriver_->getTexture("/Users/eliezerzuniga/Documents/programacion/c++/irrlicht/GameEngine-Irrlicht/media/wall.bmp") };
+        auto* texture { videoDriver_->getTexture(path_texture.data()) };
         if (!texture) throw std::runtime_error("Couldn't create texture");
 
         node->setPosition(irr::core::vector3df(0, 0, 0));
