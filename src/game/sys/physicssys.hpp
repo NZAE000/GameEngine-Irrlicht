@@ -8,14 +8,16 @@ struct PhysicsSys_t {
 
     explicit PhysicsSys_t() = default;
 
-    void update(UVENGINE::EManager_t& man)
+    void update(UVENGINE::EManager_t& Eman)
     { 
-        man.forAll([man](UVENGINE::Entity_t& e)
+        Eman.forAll([&Eman](UVENGINE::Entity_t& entity)
         {
-            //e.phycmp.x += e.phycmp.vx;
-            //e.phycmp.y += e.phycmp.vy;
-            //e.phycmp.z += e.phycmp.vz;
+            auto& phycmp = Eman.getComponent<GAME::PhysicsCmp_t>(entity);
+            phycmp.x += phycmp.vx;
+            phycmp.y += phycmp.vy;
+            phycmp.z += phycmp.vz;
         }); 
     }
 };
+
 } // namespace GAME

@@ -8,12 +8,14 @@ struct RenderSys_t {
 
     explicit RenderSys_t() = default;
 
-    void update(UVENGINE::EManager_t& man, UVENGINE::GFrameDevice_t& gfx)
+    void update(UVENGINE::EManager_t& Eman, UVENGINE::GFrameDevice_t& gfx)
     {
-        man.forAll([&man](UVENGINE::Entity_t& e)
+        Eman.forAll([&Eman](UVENGINE::Entity_t& entity)
         {
-            
-            //e.rencmp.node->setPosition(irr::core::vector3df{e.phycmp.x, e.phycmp.y, e.phycmp.z});
+            auto& rencmp = Eman.getComponent<GAME::RenderCmp_t>(entity);
+            auto& phycmp = Eman.getComponent<GAME::PhysicsCmp_t>(entity);
+
+            rencmp.node->setPosition(irr::core::vector3df{phycmp.x, phycmp.y, phycmp.z});
             //e.rencmp.node->getPosition();
         });
 
