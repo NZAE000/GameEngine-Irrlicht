@@ -97,12 +97,15 @@ struct EntityManager_t {
         std::for_each(begin(entities_), end(entities_), process);
     }
 
-    template<typename... CMPS> // Update entities with specified components
+    template<typename... CMPS, typename... TAGS> // Update entities with specified components and tags
     void forEach(auto&& process)
     {
         std::for_each(begin(entities_), end(entities_), [&](auto& entity)
-        {
-            if ( true && ( ... && entity.template hasCmp<CMPS>() ) )
+        {   
+            bool hasCmps = true && ( ... && entity.template hasCmp<CMPS>() );
+            bool hasTags = true && ( ... && entity.template hasTag<TAGS>() );
+
+            if ( true && hasCmps && hasTags )
                 process(entity, getComponent<CMPS>(entity)...);
         });
     }

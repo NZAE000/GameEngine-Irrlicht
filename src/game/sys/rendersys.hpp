@@ -6,6 +6,9 @@ namespace GAME {
 
 struct RenderSys_t {
 
+    using CMP_PACK_USE = UVENGINE::CmpPack_t<GAME::RenderCmp_t, GAME::PhysicsCmp_t>;
+    using TAG_PACK_USE = UVENGINE::TagPack_t<>;
+
     explicit RenderSys_t() = default;
 
     void update(UVENGINE::EManager_t& Eman, UVENGINE::GFrameDevice_t& gfx)
