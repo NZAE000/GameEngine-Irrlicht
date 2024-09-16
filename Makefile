@@ -17,7 +17,7 @@ UNAME       := $(shell uname)
 #Config paths
 ifeq ($(UNAME),Linux)
 	INCLUDEPATH += -I /usr/include
-	LIBPATH += 
+	LIBPATH += -lIrrlicht
 else ifeq ($(UNAME),Darwin)
 	INCLUDEPATH += -I /opt/homebrew/Cellar/irrlicht/1.8.5_1/include/
 	LIBPATH += -L /opt/homebrew/Cellar/irrlicht/1.8.5_1/lib -lIrrlicht
