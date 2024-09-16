@@ -80,11 +80,19 @@ struct EntityManager_t {
     }
 
     template<typename CMP>
-    CMP& getComponent(Entity_t& entity) 
+    CMP const& getComponent(Entity_t& entity) const
     {
         auto& storage { cmpStorage.template getContainer<CMP>() };
         return storage[entity.template getCmpKey<CMP>()]; // Get cmp data with the key and return;
     }
+
+    template<typename CMP>
+    CMP& getComponent(Entity_t& entity) // Get cmp data (read only) with the key and return;
+    {
+        auto const& cmp { const_cast<EntityManager_t const*>(this)->getComponent<CMP>(entity) };
+        return *const_cast<CMP*>(&cmp);
+    }
+
 
     template<typename CALLABLE>
     void forAll(CALLABLE&& process)

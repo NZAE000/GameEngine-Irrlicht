@@ -34,8 +34,9 @@ try {
 
     auto& ent1 { EntityMan.createEntity() };
     auto& phycmp = EntityMan.addComponent<GAME::PhysicsCmp_t>(ent1, GAME::PhysicsCmp_t{.x=1.0f, .y=1.0f, .z=10.0f});
-    auto& rencmp = EntityMan.addComponent<GAME::RenderCmp_t>(ent1, IrrDevice.createSphere());
+    EntityMan.addComponent<GAME::RenderCmp_t>(ent1, IrrDevice.createSphere());
 
+    auto const& rencmp = EntityMan.getComponent<GAME::RenderCmp_t>(ent1);
 
     while(IrrDevice.run())
     {

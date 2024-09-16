@@ -1,4 +1,4 @@
-APP := game
+APP := irrgame
 CC := clang++ -std=c++20
 CCFLAGS := 
 

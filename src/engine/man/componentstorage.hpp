@@ -49,6 +49,12 @@ struct ComponentStorage_t {
         return std::get<Slotmap_t<CMP, CAPACITY>>(components_);
     }
 
+    template<typename CMP>
+    Slotmap_t<CMP, CAPACITY> const& getContainer() const // Get slotmap (read only) of some cmp
+    {  
+        return std::get<Slotmap_t<CMP, CAPACITY>>(components_);
+    }
+
     //template<typename CMP>
     //auto createComponent()
     //{
