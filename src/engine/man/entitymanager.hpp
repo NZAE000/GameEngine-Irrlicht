@@ -97,8 +97,27 @@ struct EntityManager_t {
         std::for_each(begin(entities_), end(entities_), process);
     }
 
-    template<typename... CMPS, typename... TAGS> // Update entities with specified components and tags
+    /*template<typename... CMPS, typename... TAGS> // Update entities with specified components and tags
     void forEach(auto&& process)
+    {
+        std::for_each(begin(entities_), end(entities_), [&](auto& entity)
+        {   
+            bool hasCmps = true && ( ... && entity.template hasCmp<CMPS>() );
+            bool hasTags = true && ( ... && entity.template hasTag<TAGS>() );
+
+            if ( true && hasCmps && hasTags )
+                process(entity, getComponent<CMPS>(entity)...);
+        });
+    }*/
+
+    template<typename CMPPACK, typename TAGPACK> // CMP_PACK = UVENGINE::CmpPack_t<cmp1, cmp2, cmp3, ...> , TAG_PACK = UVENGINE::TagPack_t<tag1, tag2, tag3, ...>
+    void forEach(auto&& process)
+    {
+        forEach_impl(process, CMPPACK{}, TAGPACK{});
+    }
+
+    template<typename... CMPS, typename... TAGS>
+    void forEach_impl(auto&& process, UVENGINE::CmpPack_t<CMPS...>, UVENGINE::TagPack_t<TAGS...>)
     {
         std::for_each(begin(entities_), end(entities_), [&](auto& entity)
         {   
