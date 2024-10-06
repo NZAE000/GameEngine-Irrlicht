@@ -1,6 +1,6 @@
 #pragma once
 #include<engine/util/slotmap.hpp>
-#include<engine/man/packtraits.hpp>
+#include<engine/util/packtraits.hpp>
 #include<tuple>
 
 namespace UVENGINE {

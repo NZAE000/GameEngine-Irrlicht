@@ -4,7 +4,7 @@
 #include<stdexcept>
 #include<string_view>
 
-namespace UVENGINE  
+namespace GAME  
 {   
     struct GFrameDevice_t {
 

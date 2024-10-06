@@ -4,7 +4,7 @@
 #include<cstdint>
 #include<cassert>
 #include<type_traits>
-#include<engine/util/gframe.hpp>
+#include<game/util/gframe.hpp>
 #include<game/util/typealiases.hpp>
 #include<game/sys/rendersys.hpp>
 #include<game/sys/physicssys.hpp>
@@ -28,7 +28,7 @@ try {
     
 
     UVENGINE::EManager_t EntityMan {};
-    UVENGINE::GFrameDevice_t IrrDevice {800, 600};
+    GAME::GFrameDevice_t IrrDevice {800, 600};
     GAME::RenderSys_t RenderSys{};
     GAME::PhysicsSys_t PhysicsSys{};
 
