@@ -34,8 +34,8 @@ struct ComponentStorage_t {
 
     explicit ComponentStorage_t() = default;
 
-    using cmp_cfg = CmpTraits_t<CMP_PACK>;
-    using tag_cfg = TagTraits_t<TAG_PACK>;
+    using cmp_cfg = Traits_t<CMP_PACK>;
+    using tag_cfg = Traits_t<TAG_PACK>;
 
     template<typename TYPE>
     using SltMap_t = Slotmap_t<TYPE, CAPACITY>;

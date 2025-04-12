@@ -64,7 +64,7 @@ private:
         irr::createDevice(
                 irr::video::EDT_OPENGL,                           // deviceType: This can currently be the Null-device, one of the two software renderers, D3D8, D3D9, or OpenGL. In this example we use EDT_SOFTWARE, but to try out, you might want to change it to EDT_BURNINGSVIDEO, EDT_NULL, EDT_DIRECT3D8, EDT_DIRECT3D9, or EDT_OPENGL.
                 irr::core::dimension2d<irr::u32>(width_, height_),  // windowSize: Size of the Window or screen in FullScreenMode to be created
-                16,         // bits_per_pixel: Amount of color bits per pixel. This should be 16 or 32. The parameter is often ignored when running in windowed mode.
+                32,         // bits_per_pixel: Amount of color bits per pixel. This should be 16 or 32. The parameter is often ignored when running in windowed mode.
                 false,      // fullscreen:     Specifies if we want the device to run in fullscreen mode or not.
                 false,      // stencilbuffer:  Specifies if we want to use the stencil buffer (for drawing shadows).
                 false,      // vsync:          Specifies if we want to have vsync enabled, this is only useful in fullscreen mode.

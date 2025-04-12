@@ -22,8 +22,8 @@ struct TGPursue_t {};
 // Engine aliases
 namespace UVENGINE {
 
-using CMP_PACK     = UVENGINE::CmpPack_t<GAME::RenderCmp_t, GAME::AICmp_t, GAME::PhysicsCmp_t>;
-using TAG_PACK     = UVENGINE::TagPack_t<GAME::TGPlayer_t, GAME::TGEnemy_t, GAME::TGBulle_Tt, GAME::TGPursue_t>;
+using CMP_PACK     = UVENGINE::Pack_t<GAME::RenderCmp_t, GAME::AICmp_t, GAME::PhysicsCmp_t>;
+using TAG_PACK     = UVENGINE::Pack_t<GAME::TGPlayer_t, GAME::TGEnemy_t, GAME::TGBulle_Tt, GAME::TGPursue_t>;
 using CmpStorage_t = UVENGINE::ComponentStorage_t<CMP_PACK, TAG_PACK>;
 using EManager_t   = UVENGINE::EntityManager_t<CMP_PACK, TAG_PACK>; 
 using Entity_t     = UVENGINE::EntityManager_t<CMP_PACK, TAG_PACK>::Entity_t; 

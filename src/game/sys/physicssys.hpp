@@ -6,8 +6,8 @@ namespace GAME {
 
 struct PhysicsSys_t {
 
-    using SYS_CMPS = UVENGINE::CmpPack_t<GAME::PhysicsCmp_t>;
-    using SYS_TAGS = UVENGINE::TagPack_t<>;
+    using SYS_CMPS = UVENGINE::Pack_t<GAME::PhysicsCmp_t>;
+    using SYS_TAGS = UVENGINE::Pack_t<>;
 
     explicit PhysicsSys_t() = default;
 

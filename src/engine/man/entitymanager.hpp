@@ -117,7 +117,7 @@ struct EntityManager_t {
     }
 
     template<typename... CMPS, typename... TAGS>
-    void forEach_impl(auto&& process, UVENGINE::CmpPack_t<CMPS...>, UVENGINE::TagPack_t<TAGS...>)
+    void forEach_impl(auto&& process, UVENGINE::Pack_t<CMPS...>, UVENGINE::Pack_t<TAGS...>)
     {
         std::for_each(begin(entities_), end(entities_), [&](auto& entity)
         {   

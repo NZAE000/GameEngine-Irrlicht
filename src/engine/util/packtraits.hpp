@@ -40,7 +40,7 @@ namespace UVENGINE {
         struct index_t<T, T, TYPES...> : Constant_t<std::size_t, 0>{};
 
         template<typename T1, typename T2, typename... TYPES> // OTHERWISE: index advance in 1
-        struct index_t<T1, T2, TYPES...> : Constant_t<std::size_t, index_t<T1, TYPES...>::value + 1>{};
+        struct index_t<T1, T2, TYPES...> : Constant_t<std::size_t, index_t<T1, TYPES...>::value + 1>{}; // (((((0)+1)+1)+1)+1)
         
 
         /**  Template specialization to choose type according condition **/
@@ -81,7 +81,7 @@ namespace UVENGINE {
         };
 
         /** Template structure to provide type information **/
-        template<typename PACK> // CmpPack_t<cmp1, cmp2, cmp3, ..> or TagPack_t<tag1, tag2, tag3, ..>
+        template<typename PACK> // Pack_t<cmp1, cmp2, cmp3, ..> or TagPack_t<tag1, tag2, tag3, ..>
         struct Traits_t {
 
             //static_assert(METAPROG::is_same<PACK, >) CHECK TYPE PACK!!
@@ -105,20 +105,24 @@ namespace UVENGINE {
     } // namespace METAPROG
 
 
-/** Components information **/
+/** Information **/
 template<typename CMP_PACK>
-struct  CmpTraits_t : METAPROG::Traits_t<CMP_PACK>{};
-/** Tags information **/
-template<typename TAG_PACK>
-struct  TagTraits_t : METAPROG::Traits_t<TAG_PACK>{};
+struct Traits_t : METAPROG::Traits_t<CMP_PACK>{};
+/** Components information **/
+//template<typename CMP_PACK>
+//struct  CmpTraits_t : METAPROG::Traits_t<CMP_PACK>{};
+///** Tags information **/
+//template<typename TAG_PACK>
+//struct  TagTraits_t : METAPROG::Traits_t<TAG_PACK>{};
 
 
 /*+ User types especification **/
-template<typename... CMPS>
-struct CmpPack_t : METAPROG::Pack_t<CMPS...> {};
-template<typename... TAGS>
-struct TagPack_t : METAPROG::Pack_t<TAGS...> {};
-
+template<typename... TYPES>
+struct Pack_t : METAPROG::Pack_t<TYPES...>{};
+//template<typename... CMPS>
+//struct CmpPack_t : METAPROG::Pack_t<CMPS...> {};
+//template<typename... TAGS>
+//struct TagPack_t : METAPROG::Pack_t<TAGS...> {};
 
 
 } // namespace UVENGINE
