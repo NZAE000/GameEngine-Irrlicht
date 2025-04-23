@@ -18,9 +18,9 @@ void compile_time_verifications()
     static_assert( UVENGINE::CmpStorage_t::cmp_cfg::size() == 3 );
     static_assert( UVENGINE::CmpStorage_t::tag_cfg::size() == 4 );
     static_assert( UVENGINE::CmpStorage_t::cmp_cfg::has<GAME::AICmp_t>() );
-    static_assert( UVENGINE::CmpStorage_t::tag_cfg::id<GAME::TGBulle_Tt>() == 2 );
+    static_assert( UVENGINE::CmpStorage_t::tag_cfg::id<GAME::TGBullet_t>() == 2 );
     static_assert( UVENGINE::CmpStorage_t::cmp_cfg::mask<GAME::RenderCmp_t, GAME::PhysicsCmp_t>() == 5, "bad mask" );
-    static_assert( std::is_same<UVENGINE::CmpStorage_t::tag_cfg::mask_type, uint8_t>::value == true );
+    static_assert( std::is_same<UVENGINE::CmpStorage_t::tag_cfg::mask_t, uint8_t>::value == true );
 
 // Verify vector 3d operators
     using Vect3f_t = UVENGINE::Vect3_t<float>;
@@ -44,8 +44,8 @@ void compile_time_verifications()
 
     
 // See types
-    seetype(UVENGINE::CmpStorage_t::tag_cfg::mask_type{});
-    seetype(UVENGINE::CmpStorage_t::TupleCmp_t{});
+    seetype(UVENGINE::CmpStorage_t::tag_cfg::mask_t{});
+    seetype(UVENGINE::CmpStorage_t::pack_to_tuple{});
     seetype(UVENGINE::CmpStorage_t::Storage_t{});
 }
 
@@ -62,7 +62,7 @@ try {
     GAME::PhysicsSys_t PhysicsSys{};
 
     auto& ent1 { EntityMan.createEntity() };
-    auto& phycmp = EntityMan.addComponent<GAME::PhysicsCmp_t>(ent1, GAME::PhysicsCmp_t{.z=10.0f, .vz=.01f});
+    auto& phycmp = EntityMan.addComponent<GAME::PhysicsCmp_t>(ent1, GAME::PhysicsCmp_t{.z=-10.0f, .vz=.005f});
     EntityMan.addComponent<GAME::RenderCmp_t>(ent1, IrrDevice.createSphere("/Users/eliezerzuniga/Documents/progra/c++/irrlicht/GameEngine-Irrlicht/media/wall.bmp"));
 
     [[maybe_unused]] auto const& rencmp = EntityMan.getComponent<GAME::RenderCmp_t>(ent1);

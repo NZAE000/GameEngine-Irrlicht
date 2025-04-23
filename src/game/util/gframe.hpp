@@ -43,7 +43,7 @@ namespace GAME
         auto* texture { videoDriver_->getTexture(path_texture.data()) };
         if (!texture) throw std::runtime_error("Couldn't create texture");
 
-        node->setPosition(irr::core::vector3df(0, 0, 0));
+        node->setPosition(irr::core::vector3df(0, 0, 30));
         node->setMaterialTexture(0, texture);
         node->setMaterialFlag(irr::video::EMF_LIGHTING, false);
         

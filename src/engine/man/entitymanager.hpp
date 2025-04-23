@@ -15,8 +15,8 @@ struct EntityManager_t {
     using key_type     = typename Slotmap_t<CMP, CAPACITY>::key_type;
     using CmpStorage_t = ComponentStorage_t<CMP_PACK, TAG_PACK, CAPACITY>;
 
-    using Tuple_cmps   = typename METAPROG::Replace_with<CMP_PACK, std::tuple>::type;          // CmpPack_t<cmp1, cmp2, cmp3..> to std::tuple<cmp1, cmp2, cmp3, ...>
-    using KeyStorage_t = typename METAPROG::ForAll_types_wrap<Tuple_cmps, key_type>::type;     // std::tuple<cmp1, cmp2, cmp3, ...> to std::tuple<key_type<cmp1>, key_type<cmp2>, key_type<cmp3>, ...>
+    using Tuple_cmps   = typename METAPROG::replace_container_t<CMP_PACK, std::tuple>;          // CmpPack_t<cmp1, cmp2, cmp3..> to std::tuple<cmp1, cmp2, cmp3, ...>
+    using KeyStorage_t = typename METAPROG::for_all_wrap_t<Tuple_cmps, key_type>;     // std::tuple<cmp1, cmp2, cmp3, ...> to std::tuple<key_type<cmp1>, key_type<cmp2>, key_type<cmp3>, ...>
 
 // ########################################################################
 
@@ -48,9 +48,9 @@ struct EntityManager_t {
             return std::get<key_type<CMP>>(cmpKeys);
         }
 
-
-        typename CmpStorage_t::cmp_cfg::mask_type cmp_mask {};
-        typename CmpStorage_t::tag_cfg::mask_type tag_mask {};
+        // Mask and tags instantation.
+        typename CmpStorage_t::cmp_cfg::mask_t cmp_mask {};
+        typename CmpStorage_t::tag_cfg::mask_t tag_mask {};
         std::size_t id { ++NEXT_ID }; // Each entity created, set next id.
 
     private:
