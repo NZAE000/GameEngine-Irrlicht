@@ -1,84 +1,60 @@
-#pragma once
-#include<engine/util/slotmap.hpp>
-#include<engine/util/packtypes.hpp>
-#include<tuple>
+#include <engine/util/typepack.hpp>
+#include  <engine/util/slotmap.hpp>
 
-namespace UVENGINE {
+namespace uvengine {
 
 
-//template<typename CMP1, typename CMP2, typename CMP3, std::size_t CAPACITY=100>
-template<typename CMP_PACK, typename TAG_PACK, std::size_t CAPACITY=100> // CMP_PACK = Pack_t<cmp1, cmp2, cmp3, ...>
+// template<typename PACK>
+//struct PackTraits_t { static_assert(false, "ComponentStorage_t::PackTraits_t: TypePack<ts..> parameter requeried."); };
+
+
+template<typename CMPPACK, typename TAGPACK, std::size_t CAPACITY=100> 
 struct ComponentStorage_t {
 
-//############# Template structure to provide type information (Wrapper to PACK = Pack_t<Types...>) ###################
 private:
+    // Wrapper to PACK = TypPack_t<Ts...>
     template<typename PACK>
-    struct Traits_t {
+    struct PackTraits_t {
 
-        //static_assert(METAPROG::is_same<PACK, >) CHECK TYPE PACK!!
         template<uint8_t id>
-        using type_of_id = typename PACK::template type_of_id<id>; // Template type metafunction.
-        using mask_t     = typename PACK::mask_t;
+        using type_of_pos = typename PACK::template type_of_pos<id>; // Template type metafunction.
+        using mask_t      = typename PACK::mask_t;
 
-                                    static consteval uint8_t size() noexcept { return PACK::size();                    }
-        template<typename TYPE>     static consteval bool    has()  noexcept { return PACK::template has<TYPE>();      }
-        template<typename TYPE>     static consteval uint8_t id()   noexcept { return PACK::template id<TYPE>();       }
-        template<typename... TYPES> static consteval mask_t  mask() noexcept { return PACK::template mask<TYPES...>(); }
+                                    static consteval uint8_t size()  noexcept { return PACK::size();                    }
+        template<typename Type>     static consteval bool    has()   noexcept { return PACK::template has<Type>();      }
+        template<typename Type>     static consteval uint8_t id()    noexcept { return PACK::template id<Type>();       }
+        template<typename... Types> static consteval mask_t  mask()  noexcept { return PACK::template mask<Types...>(); }
     };
-
-    template<typename TYPE>
-    using SltMap_t = Slotmap_t<TYPE, CAPACITY>;
-// ######################################################################################################################
 
 public:
 
-    explicit ComponentStorage_t() = default;
+    using tag_cfg = PackTraits_t<TAGPACK>; // TAGPACK = TypePack_t<Types...>
+    using cmp_cfg = PackTraits_t<CMPPACK>; // CMPPACK = TypePack_t<Types...>
 
-    using cmp_cfg = Traits_t<CMP_PACK>;
-    using tag_cfg = Traits_t<TAG_PACK>;
+    template<typename Type>
+    using slotmap_t     = Slotmap_t<Type, CAPACITY>;
+    using pack_to_tuple = metaprog::replace_container_t<CMPPACK, std::tuple>;  // TypePack_t<Types...> to std::tuple<Types...>
+    using container_t   = metaprog::for_all_wrap_t<pack_to_tuple, slotmap_t>;  // std::tuple<Types...> to std::tuple<SlotMap_t<Types>...>
 
-    using pack_to_tuple = typename METAPROG::replace_container_t<CMP_PACK, std::tuple>;    // Pack_t<cmp1, cmp2, cmp3..> to std::tuple<cmp1, cmp2, cmp3, ...>
-    using Storage_t     = typename METAPROG::for_all_wrap_t<pack_to_tuple, SltMap_t>;     // std::tuple<cmp1, cmp2, cmp3, ...> to std::tuple<Slotmap_t<cmp1, CAPACITY>, Slotmap_t<cmp2, CAPACITY>, Slotmap_t<cmp3, CAPACITY>, ...>
 
-    
-    template<typename CMP>
-    Slotmap_t<CMP, CAPACITY>& getContainer() // Get slotmap of some cmp.
-    {  
-        return std::get<Slotmap_t<CMP, CAPACITY>>(components_);
+    template<typename Cmp>
+    [[nodiscard]] slotmap_t<Cmp> const& getContainer() const noexcept
+    {
+        static_assert(cmp_cfg::template has<Cmp>(), "ComponentStorage_t::getContainer: cmp not found.");
+        return std::get<slotmap_t<Cmp>>(_components);
     }
 
-    template<typename CMP>
-    Slotmap_t<CMP, CAPACITY> const& getContainer() const // Get slotmap (read only) of some cmp.
-    {  
-        return std::get<Slotmap_t<CMP, CAPACITY>>(components_);
+    template<typename Cmp>
+    [[nodiscard]] slotmap_t<Cmp>& getContainer() noexcept
+    {
+        static_assert(cmp_cfg::template has<Cmp>(), "ComponentStorage_t::getContainer: cmp not found.");
+        return std::get<slotmap_t<Cmp>>(_components);
     }
-
-    //template<typename CMP>
-    //auto createComponent()
-    //{
-    //    
-    //}
-
-    //template<typename CMP_t>
-    //[[nodiscard]] constexpr CmpType_t getCmpId()  const noexcept { return getCmpId(CMP_t{}); }
-//
-    //template<typename CMP_t>
-    //[[nodiscard]] constexpr std::size_t getMask() const noexcept { return 1 << getCmpId<CMP_t>(); }
-//
-    //template<typename CMP_t> // Get slotmap of CMP_t
-    //[[nodiscard]] constexpr Slotmap_t<CMP_t, CAPACITY>& getContainer()
-    //{   
-    //    return std::get<Slotmap_t<CMP_t, CAPACITY>>(components_);
-    //}
 
 private:
-// Container of different components (When ComponentStorage_t is instantiated, storage will has all container of all cmps)
-    Storage_t components_{};
-    //Tuple_t<Slotmap_t<CMP1, CAPACITY>, Slotmap_t<CMP2, CAPACITY>, Slotmap_t<CMP3, CAPACITY>> components_{};
-//
-    //[[nodiscard]] constexpr CmpType_t getCmpId(CMP1) const noexcept { return 0; }
-    //[[nodiscard]] constexpr CmpType_t getCmpId(CMP2) const noexcept { return 1; }
-    //[[nodiscard]] constexpr CmpType_t getCmpId(CMP3) const noexcept { return 2; }
+    container_t _components{}; // std::tuple<SlotMap_t<Types>...>
 };
 
-} // namespace UVENGINE
+    
+
+} // namespace uvengine

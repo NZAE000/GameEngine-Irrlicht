@@ -1,11 +1,11 @@
 #pragma once
 #include<cstddef>
 
-namespace GAME {
+namespace game {
 
 struct AICmp_t {
     std::size_t eid;
 };
 
 
-} // namespace GAME
+} // namespace game

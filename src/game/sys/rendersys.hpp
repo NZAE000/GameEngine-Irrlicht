@@ -1,44 +1,43 @@
 #pragma once
 #include<game/util/typealiases.hpp>
-#include<game/util/gframe.hpp>
+#include<engine/util/gfxdevice.hpp>
 
-namespace GAME {
+namespace game {
 
 struct RenderSys_t {
 
-    using SYS_CMPS = UVENGINE::Pack_t<GAME::RenderCmp_t, GAME::PhysicsCmp_t>;
-    using SYS_TAGS = UVENGINE::Pack_t<>;
+    using REQUIRED_CMPS = uvengine::TypePack_t<game::RenderCmp_t, game::PhysicsCmp_t>;
+    using REQUIRED_TAGS = uvengine::TypePack_t<>;
 
     explicit RenderSys_t() = default;
 
-    void update(UVENGINE::EManager_t& Eman, GAME::GFrameDevice_t& gfx)
+    void update(uvengcfg::EManager_t& Eman, uvengine::GFXDevice_t& gfx)
     {
 
-        Eman.forEach<SYS_CMPS, SYS_TAGS>(
-        [](UVENGINE::Entity_t& entity, GAME::RenderCmp_t& rencmp, GAME::PhysicsCmp_t const& phycmp)
+        Eman.forEach<REQUIRED_CMPS, REQUIRED_TAGS>(
+        [](game::RenderCmp_t& rencmp, game::PhysicsCmp_t const& phycmp)
         {
-            rencmp.node->setPosition(irr::core::vector3df{phycmp.x, phycmp.y, phycmp.z});
+            rencmp.node->setPosition(irr::core::vector3df{phycmp._x, phycmp._y, phycmp._z});
         });
+
+        //Eman.forEach<game::RenderCmp_t, game::PhysicsCmp_t>
+        //([](uvengcfg::Entity_t& entity, game::RenderCmp_t& rencmp, game::PhysicsCmp_t const& phycmp)
+        //{
+        //    rencmp.node->setPosition(irr::core::vector3df{phycmp.x, phycmp.y, phycmp.z});
+        //});
+
+        //Eman.forAll([&Eman](uvengcfg::Entity_t& entity)
+        //{
+        //    auto&       rencmp = Eman.getComponent<game::RenderCmp_t>(entity);
+        //    auto const& phycmp = Eman.getComponent<game::PhysicsCmp_t>(entity);
+        //    rencmp.node->setPosition(irr::core::vector3df{phycmp.x, phycmp.y, phycmp.z});
+        //    //e.rencmp.node->getPosition();
+        //});
 
         gfx.beginScene();
         gfx.drawAll();
         gfx.endScene();
-
-        //Eman.forEach<GAME::RenderCmp_t, GAME::PhysicsCmp_t>
-        //([](UVENGINE::Entity_t& entity, GAME::RenderCmp_t& rencmp, GAME::PhysicsCmp_t const& phycmp)
-        //{
-        //    rencmp.node->setPosition(irr::core::vector3df{phycmp.x, phycmp.y, phycmp.z});
-        //});
-
-        //Eman.forAll([&Eman](UVENGINE::Entity_t& entity)
-        //{
-        //    auto&       rencmp = Eman.getComponent<GAME::RenderCmp_t>(entity);
-        //    auto const& phycmp = Eman.getComponent<GAME::PhysicsCmp_t>(entity);
-
-        //    rencmp.node->setPosition(irr::core::vector3df{phycmp.x, phycmp.y, phycmp.z});
-        //    //e.rencmp.node->getPosition();
-        //});
     }
 };
     
-} // namespace GAME
+} // namespace game

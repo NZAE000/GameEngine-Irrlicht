@@ -8,24 +8,26 @@
 void seetype(auto) { std::cout<<__PRETTY_FUNCTION__<< '\n'; }
 
 // Game aliases
-namespace GAME {
+namespace game {
 
 // TAGS
-struct TGPlayer_t {};
-struct TGEnemy_t  {};
-struct TGBullet_t {};
-struct TGPursue_t {};
+struct TGPlayer {};
+struct TGEnemy  {};
+struct TGBullet {};
+struct TGPursue {};
+struct TGSuperKick {};
+struct TGSuperJump {};
 
 } // namespace GAME
 
 
 // Engine aliases
-namespace UVENGINE {
+namespace uvengcfg {
 
-using CMP_PACK     = UVENGINE::Pack_t<GAME::RenderCmp_t, GAME::AICmp_t, GAME::PhysicsCmp_t>;
-using TAG_PACK     = UVENGINE::Pack_t<GAME::TGPlayer_t, GAME::TGEnemy_t, GAME::TGBullet_t, GAME::TGPursue_t>;
-using CmpStorage_t = UVENGINE::ComponentStorage_t<CMP_PACK, TAG_PACK>;
-using EManager_t   = UVENGINE::EntityManager_t<CMP_PACK, TAG_PACK>; 
-using Entity_t     = UVENGINE::EntityManager_t<CMP_PACK, TAG_PACK>::Entity_t; 
+using CMP_PACK     = uvengine::TypePack_t<game::RenderCmp_t, game::AICmp_t, game::PhysicsCmp_t>;
+using TAG_PACK     = uvengine::TypePack_t<game::TGPlayer, game::TGEnemy, game::TGBullet, game::TGPursue, game::TGSuperKick, game::TGSuperJump>;
+using CmpStorage_t = uvengine::ComponentStorage_t<CMP_PACK, TAG_PACK>;
+using EManager_t   = uvengine::EntityManager_t<CMP_PACK, TAG_PACK>; 
+using Entity_t     = uvengine::EntityManager_t<CMP_PACK, TAG_PACK>::Entity_t; 
 
-} // namespace UVENGINE
+} // namespace uvengine

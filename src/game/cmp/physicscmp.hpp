@@ -1,11 +1,11 @@
 #pragma once
 
 
-namespace GAME {
+namespace game {
 
 struct PhysicsCmp_t {
-    float x{}, y{}, z{};
-    float vx{}, vy{}, vz{};
+    float _x{}, _y{}, _z{};
+    float _vx{}, _vy{}, _vz{};
 };
 
 } // namespace GAME

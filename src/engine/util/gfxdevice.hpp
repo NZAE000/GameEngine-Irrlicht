@@ -4,14 +4,15 @@
 #include<stdexcept>
 #include<string_view>
 
-namespace GAME  
-{   
-    struct GFrameDevice_t {
+namespace uvengine {   
+
+// ### GFX Interface ###############################
+struct GFXDevice_t {
 
     using u32 = irr::u32;
 
 // Constructor
-    explicit GFrameDevice_t(u32 w, u32 h)
+    explicit GFXDevice_t(u32 w, u32 h)
     : width_{w}, height_{h}
     {   
         irr::IrrlichtDevice* device { device_.get() };
@@ -77,4 +78,5 @@ private:
     irr::scene::ISceneManager* const sceneMan_    { device_.get()? device_->getSceneManager()   : nullptr };
     irr::gui::IGUIEnvironment* const guiEnv_      { device_.get()? device_->getGUIEnvironment() : nullptr };
 };
-} // namespace UVENGINE 
+
+} // namespace uvengine 

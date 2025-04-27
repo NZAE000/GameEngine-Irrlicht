@@ -4,10 +4,10 @@
 #include<cstdint>
 #include<cassert>
 #include<type_traits>
-#include<game/util/gframe.hpp>
 #include<game/util/typealiases.hpp>
 #include<game/sys/rendersys.hpp>
 #include<game/sys/physicssys.hpp>
+#include<engine/util/gfxdevice.hpp>
 #include<engine/util/vector3.hpp>
 //#define NDEBUG
 
@@ -15,15 +15,28 @@
 void compile_time_verifications()
 {
 // Verify cmps and tags
-    static_assert( UVENGINE::CmpStorage_t::cmp_cfg::size() == 3 );
-    static_assert( UVENGINE::CmpStorage_t::tag_cfg::size() == 4 );
-    static_assert( UVENGINE::CmpStorage_t::cmp_cfg::has<GAME::AICmp_t>() );
-    static_assert( UVENGINE::CmpStorage_t::tag_cfg::id<GAME::TGBullet_t>() == 2 );
-    static_assert( UVENGINE::CmpStorage_t::cmp_cfg::mask<GAME::RenderCmp_t, GAME::PhysicsCmp_t>() == 5, "bad mask" );
-    static_assert( std::is_same<UVENGINE::CmpStorage_t::tag_cfg::mask_t, uint8_t>::value == true );
+    static_assert(uvengcfg::TAG_PACK::size() == 6, "That is not the size.");
+    static_assert(uvengcfg::TAG_PACK::has<game::TGSuperKick>() == true, "That type is not there.");
+    static_assert(std::is_same_v<uvengcfg::TAG_PACK::type_of_pos<1>, game::TGEnemy>, "That type is not in that position.");
+    static_assert(uvengcfg::TAG_PACK::id<game::TGEnemy>() == 1, "That type is not in that position.");
+    static_assert(uvengcfg::TAG_PACK::id<game::TGSuperJump>() == 5, "That type is not in that position.");
+    static_assert(uvengcfg::TAG_PACK::mask<game::TGPlayer>() == 0b01, "That type is not in that position.");
+    static_assert(uvengcfg::TAG_PACK::mask<game::TGEnemy>() == 0b10, "That type is not in that position.");
+    static_assert(uvengcfg::TAG_PACK::mask<game::TGPlayer, game::TGEnemy>() == 0b11, "That type is not in that position.");
+    static_assert(std::is_same_v<uvengcfg::TAG_PACK::mask_t, uint8_t>, "Is not mask type.");
+
+    static_assert(uvengcfg::CmpStorage_t::tag_cfg::size() == 6, "That is not the size.");
+    static_assert(uvengcfg::CmpStorage_t::tag_cfg::has<game::TGPlayer>() == true, "That type is not there.");
+    static_assert(std::is_same_v<uvengcfg::CmpStorage_t::tag_cfg::type_of_pos<1>, game::TGEnemy>, "That type is not in that position.");
+    static_assert(uvengcfg::CmpStorage_t::tag_cfg::id<game::TGEnemy>() == 1, "That type is not in that position.");
+    static_assert(uvengcfg::CmpStorage_t::tag_cfg::id<game::TGSuperJump>() == 5, "That type is not in that position.");
+    static_assert(uvengcfg::CmpStorage_t::tag_cfg::mask<game::TGPlayer>() == 0b01, "That type is not in that position.");
+    static_assert(uvengcfg::CmpStorage_t::tag_cfg::mask<game::TGEnemy>() == 0b10, "That type is not in that position.");
+    static_assert(uvengcfg::CmpStorage_t::tag_cfg::mask<game::TGPlayer, game::TGEnemy>() == 0b11, "That type is not in that position.");
+    static_assert(std::is_same_v<uvengcfg::CmpStorage_t::tag_cfg::mask_t, uint8_t>, "Is not mask type.");
 
 // Verify vector 3d operators
-    using Vect3f_t = UVENGINE::Vect3_t<float>;
+    using Vect3f_t = uvengine::Vect3_t<float>;
     constexpr Vect3f_t a{0,1,1}, b{1,0,0}, c;
 
     static_assert( (a + b) == Vect3f_t{ 1, 1, 1} );
@@ -41,12 +54,6 @@ void compile_time_verifications()
     //static_assert( a.length() == std::sqrt(2.0f));
 
     //static_assert( Vect3f_t{1,0,0}.normalize() == Vect3f_t{1,0,0} );
-
-    
-// See types
-    seetype(UVENGINE::CmpStorage_t::tag_cfg::mask_t{});
-    seetype(UVENGINE::CmpStorage_t::pack_to_tuple{});
-    seetype(UVENGINE::CmpStorage_t::Storage_t{});
 }
 
 int 
@@ -56,17 +63,46 @@ try {
     compile_time_verifications();
     
 
-    UVENGINE::EManager_t EntityMan {};
-    GAME::GFrameDevice_t IrrDevice {800, 600};
-    GAME::RenderSys_t  RenderSys{};
-    GAME::PhysicsSys_t PhysicsSys{};
+    uvengcfg::EManager_t  EntityMan {};
+    uvengine::GFXDevice_t IrrDevice {800, 600};
+    game::RenderSys_t     RenderSys{};
+    game::PhysicsSys_t    PhysicsSys{};
 
-    auto& ent1 { EntityMan.createEntity() };
-    auto& phycmp = EntityMan.addComponent<GAME::PhysicsCmp_t>(ent1, GAME::PhysicsCmp_t{.z=-10.0f, .vz=.005f});
-    EntityMan.addComponent<GAME::RenderCmp_t>(ent1, IrrDevice.createSphere("/Users/eliezerzuniga/Documents/progra/c++/irrlicht/GameEngine-Irrlicht/media/wall.bmp"));
+    auto& sphere1 { EntityMan.createEntity() };
+    [[maybe_unused]] auto& phycmp1 = EntityMan.addComponent<game::PhysicsCmp_t>(sphere1, game::PhysicsCmp_t{._x=-10.0f, ._z=-10.0f, ._vz=.005f});
+    EntityMan.addComponent<game::RenderCmp_t>(sphere1, IrrDevice.createSphere("/Users/eliezerzuniga/Documents/progra/c++/irrlicht/GameEngine-Irrlicht/media/wall.bmp"));
+    //[[maybe_unused]] auto const& rencmp1 = EntityMan.getComponent<game::RenderCmp_t>(sphere1);
 
-    [[maybe_unused]] auto const& rencmp = EntityMan.getComponent<GAME::RenderCmp_t>(ent1);
+    auto& sphere2 { EntityMan.createEntity() };
+    [[maybe_unused]] auto& phycmp2 = EntityMan.addComponent<game::PhysicsCmp_t>(sphere2, game::PhysicsCmp_t{._x=10.0f, ._z=-10.0f, ._vz=.002f});
+    EntityMan.addComponent<game::RenderCmp_t>(sphere2, IrrDevice.createSphere("/Users/eliezerzuniga/Documents/progra/c++/irrlicht/GameEngine-Irrlicht/media/wall.bmp"));
+    //std::cout<<"x: "<<phycmp1._x<<" y: "<<phycmp1._y<<" z: "<<phycmp1._z<<'\n';
 
+
+    auto& player = EntityMan.createEntity();
+    EntityMan.addComponent<game::PhysicsCmp_t>(player, .0f, .0f, .0f);
+    EntityMan.addComponent<game::PhysicsCmp_t>(player, .0f, .0f, .0f); // Add again.. return the before.
+    assert(player.getMaskTag() == 0 && "");
+    player.addTag<game::TGPlayer, game::TGSuperKick>();
+    player.hasTag<game::TGPlayer, game::TGSuperKick>();
+    assert((player.hasTag<game::TGPlayer, game::TGSuperKick>()) && "It have not mask");
+    player.removeTag<game::TGSuperKick>();
+    assert(!player.hasTag<game::TGSuperKick>() && "It have mask");
+
+    auto& enemy = EntityMan.createEntity();
+    EntityMan.addComponent<game::PhysicsCmp_t>(enemy, game::PhysicsCmp_t{._x=.0, ._y=.0, ._z=.0});
+    EntityMan.addComponent<game::AICmp_t>(enemy, player.getId());
+    assert(enemy.getMaskCmp() == 0b110 && "bad enemy mask");
+
+
+    // Se types in execution time.
+    seetype(uvengcfg::CmpStorage_t{});
+    seetype(uvengcfg::CmpStorage_t::container_t{});
+    seetype(uvengcfg::EManager_t::CmpStorage_t{});
+    seetype(uvengcfg::EManager_t::CmpStorage_t::container_t{});
+    seetype(uvengcfg::EManager_t::Entity_t::keystorage_t{});
+
+    // RUN
     IrrDevice.addStaticText();
     while(IrrDevice.run())
     {
@@ -74,24 +110,22 @@ try {
         PhysicsSys.update(EntityMan);
     }
 
-    std::cout<<"x: "<<phycmp.x<<" y: "<<phycmp.y<<" z: "<<phycmp.z<<'\n';
     
-
-    //std::cout<<cmpStorage.getMask<GAME::PhysicsCmp_t>()<<'\n';
-    //std::cout<<cmpStorage.getMask<GAME::RenderCmp_t>()<<'\n';
-    //std::cout<<cmpStorage.getMask<GAME::AICmp_t>()<<'\n';
+    //std::cout<<cmpStorage.getMask<game::PhysicsCmp_t>()<<'\n';
+    //std::cout<<cmpStorage.getMask<game::RenderCmp_t>()<<'\n';
+    //std::cout<<cmpStorage.getMask<game::AICmp_t>()<<'\n';
 //
-    //auto& phyContainer { cmpStorage.getContainer<GAME::PhysicsCmp_t>() };
-    //auto key = phyContainer.insert(GAME::PhysicsCmp_t{0,0,0,1,1,1});
+    //auto& phyContainer { cmpStorage.getContainer<game::PhysicsCmp_t>() };
+    //auto key = phyContainer.insert(game::PhysicsCmp_t{0,0,0,1,1,1});
 //
     //for (auto& phycmp : phyContainer){
     //    std::cout<<phycmp.vx<<phycmp.vy<<phycmp.vy<<'\n';
     //}
     
-    //GAME::PhysicsSys_t PhySys;
-    //GAME::RenderSys_t  RenSys;
+    //game::PhysicsSys_t PhySys;
+    //game::RenderSys_t  RenSys;
 //
-    //UVENGINE::GFrameDevice_t device{640, 360};
+    //uvengine::GFrameDevice_t device{640, 360};
     //device.addStaticText();
 //
     //auto& entity = EntMan.createEntity();

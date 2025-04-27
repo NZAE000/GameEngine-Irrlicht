@@ -1,7 +1,7 @@
 #pragma once
 #include<cmath>
 
-namespace UVENGINE { 
+namespace uvengine { 
 
 
 template<typename TYPE>
@@ -71,4 +71,4 @@ private:
 
 };
 
-} // namespace UVENGINE 
+} // namespace uvengine 

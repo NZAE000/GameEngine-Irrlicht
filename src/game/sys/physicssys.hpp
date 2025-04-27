@@ -2,34 +2,34 @@
 #include<engine/man/entitymanager.hpp>
 #include<game/util/typealiases.hpp>
 
-namespace GAME {
+namespace game {
 
 struct PhysicsSys_t {
 
-    using SYS_CMPS = UVENGINE::Pack_t<GAME::PhysicsCmp_t>;
-    using SYS_TAGS = UVENGINE::Pack_t<>;
+    using REQUIRED_CMPS = uvengine::TypePack_t<game::PhysicsCmp_t>;
+    using REQUIRED_TAGS = uvengine::TypePack_t<>;
 
     explicit PhysicsSys_t() = default;
 
-    void update(UVENGINE::EManager_t& Eman)
+    void update(uvengcfg::EManager_t& Eman)
     { 
-        Eman.forEach<SYS_CMPS, SYS_TAGS>([](UVENGINE::Entity_t& entity, GAME::PhysicsCmp_t& phycmp)
+        Eman.forEach<REQUIRED_CMPS, REQUIRED_TAGS>([](game::PhysicsCmp_t& phycmp)
         {
-            phycmp.x += phycmp.vx;
-            phycmp.y += phycmp.vy;
-            phycmp.z += phycmp.vz;
+            phycmp._x += phycmp._vx;
+            phycmp._y += phycmp._vy;
+            phycmp._z += phycmp._vz;
         }); 
 
-        //Eman.forEach<GAME::PhysicsCmp_t>([](UVENGINE::Entity_t& entity, GAME::PhysicsCmp_t& phycmp)
+        //Eman.forEach<game::PhysicsCmp_t>([](uvengcfg::Entity_t& entity, game::PhysicsCmp_t& phycmp)
         //{
         //    phycmp.x += phycmp.vx;
         //    phycmp.y += phycmp.vy;
         //    phycmp.z += phycmp.vz;
         //});
         
-        //Eman.forAll([&Eman](UVENGINE::Entity_t& entity)
+        //Eman.forAll([&Eman](uvengcfg::Entity_t& entity)
         //{
-        //    auto& phycmp = Eman.getComponent<GAME::PhysicsCmp_t>(entity);
+        //    auto& phycmp = Eman.getComponent<game::PhysicsCmp_t>(entity);
         //    phycmp.x += phycmp.vx;
         //    phycmp.y += phycmp.vy;
         //    phycmp.z += phycmp.vz;
@@ -38,4 +38,4 @@ struct PhysicsSys_t {
     }
 };
 
-} // namespace GAME
+} // namespace game
