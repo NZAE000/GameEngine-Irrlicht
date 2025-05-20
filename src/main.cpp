@@ -56,51 +56,70 @@ void compile_time_verifications()
     //static_assert( Vect3f_t{1,0,0}.normalize() == Vect3f_t{1,0,0} );
 }
 
+void seetype(auto) { std::cout<<__PRETTY_FUNCTION__<< '\n'; }
+
+
+void createWorld(uvengcfg::EManager_t& EntMan, uvengine::GFXDevice_t& IrrDevice)
+{
+    // Set world's terrain and texture.
+    auto& terrain = IrrDevice.createTerrain("/Users/eliezerzuniga/Documents/progra/c++/irrlicht/GameEngine-Irrlicht/media/terrain.bmp", "/Users/eliezerzuniga/Documents/progra/c++/irrlicht/GameEngine-Irrlicht/media/ground.bmp");
+    irr::core::aabbox3d<irr::f32> terrainBound = terrain.getBoundingBox();
+
+    // Set camera position
+    auto& camera { IrrDevice.getCamera() };
+    camera.setPosition({0.0f, terrainBound.MaxEdge.Y+20, -terrainBound.MaxEdge.Z/2-50});
+    camera.setTarget({0.0f, 0.0f, 0.0f});
+
+    // First entity.
+    auto& sphere1 { EntMan.createEntity() };
+    [[maybe_unused]] auto& phycmp1 = EntMan.addComponent<game::PhysicsCmp_t>(sphere1, game::PhysicsCmp_t{._x=-10.0f, ._z=-10.0f, ._vy=.005f});
+    EntMan.addComponent<game::RenderCmp_t>(sphere1, &IrrDevice.createSphere("/Users/eliezerzuniga/Documents/progra/c++/irrlicht/GameEngine-Irrlicht/media/wall.bmp"));
+    //[[maybe_unused]] auto const& rencmp1 = EntMan.getComponent<game::RenderCmp_t>(sphere1);
+
+    // Second entity.
+    auto& sphere2 { EntMan.createEntity() };
+    [[maybe_unused]] auto& phycmp2 = EntMan.addComponent<game::PhysicsCmp_t>(sphere2, game::PhysicsCmp_t{._x=10.0f, ._z=-10.0f, ._vy=.003f});
+    EntMan.addComponent<game::RenderCmp_t>(sphere2, &IrrDevice.createSphere("/Users/eliezerzuniga/Documents/progra/c++/irrlicht/GameEngine-Irrlicht/media/wall.bmp"));
+    //std::cout<<"x: "<<phycmp1._x<<" y: "<<phycmp1._y<<" z: "<<phycmp1._z<<'\n';
+
+// Entities to assert test.
+    auto& player = EntMan.createEntity();
+    EntMan.addComponent<game::PhysicsCmp_t>(player, .0f, .0f, .0f);
+    EntMan.addComponent<game::PhysicsCmp_t>(player, .0f, .0f, .0f); // Add again.. return the before.
+
+    auto& enemy = EntMan.createEntity();
+    EntMan.addComponent<game::PhysicsCmp_t>(enemy, game::PhysicsCmp_t{._x=.0, ._y=.0, ._z=.0});
+    EntMan.addComponent<game::AICmp_t>(enemy, player.getId());
+    
+    // Execution time verification (with debug)
+    assert(player.getMaskTag() == 0 && "");
+    player.addTag<game::TGPlayer, game::TGSuperKick>();
+    assert((player.hasTag<game::TGPlayer, game::TGSuperKick>()) && "It have not mask");
+    player.removeTag<game::TGSuperKick>();
+    assert(!player.hasTag<game::TGSuperKick>() && "It have mask");
+    assert(enemy.getMaskCmp() == 0b110 && "bad enemy mask");
+}
+
 int 
 main(void){
 try {
 
-    compile_time_verifications();
-    
+    //compile_time_verifications();
 
     uvengcfg::EManager_t  EntityMan {};
     uvengine::GFXDevice_t IrrDevice {800, 600};
     game::RenderSys_t     RenderSys{};
     game::PhysicsSys_t    PhysicsSys{};
 
-    auto& sphere1 { EntityMan.createEntity() };
-    [[maybe_unused]] auto& phycmp1 = EntityMan.addComponent<game::PhysicsCmp_t>(sphere1, game::PhysicsCmp_t{._x=-10.0f, ._z=-10.0f, ._vz=.005f});
-    EntityMan.addComponent<game::RenderCmp_t>(sphere1, IrrDevice.createSphere("/Users/eliezerzuniga/Documents/progra/c++/irrlicht/GameEngine-Irrlicht/media/wall.bmp"));
-    //[[maybe_unused]] auto const& rencmp1 = EntityMan.getComponent<game::RenderCmp_t>(sphere1);
-
-    auto& sphere2 { EntityMan.createEntity() };
-    [[maybe_unused]] auto& phycmp2 = EntityMan.addComponent<game::PhysicsCmp_t>(sphere2, game::PhysicsCmp_t{._x=10.0f, ._z=-10.0f, ._vz=.002f});
-    EntityMan.addComponent<game::RenderCmp_t>(sphere2, IrrDevice.createSphere("/Users/eliezerzuniga/Documents/progra/c++/irrlicht/GameEngine-Irrlicht/media/wall.bmp"));
-    //std::cout<<"x: "<<phycmp1._x<<" y: "<<phycmp1._y<<" z: "<<phycmp1._z<<'\n';
-
-
-    auto& player = EntityMan.createEntity();
-    EntityMan.addComponent<game::PhysicsCmp_t>(player, .0f, .0f, .0f);
-    EntityMan.addComponent<game::PhysicsCmp_t>(player, .0f, .0f, .0f); // Add again.. return the before.
-    assert(player.getMaskTag() == 0 && "");
-    player.addTag<game::TGPlayer, game::TGSuperKick>();
-    player.hasTag<game::TGPlayer, game::TGSuperKick>();
-    assert((player.hasTag<game::TGPlayer, game::TGSuperKick>()) && "It have not mask");
-    player.removeTag<game::TGSuperKick>();
-    assert(!player.hasTag<game::TGSuperKick>() && "It have mask");
-
-    auto& enemy = EntityMan.createEntity();
-    EntityMan.addComponent<game::PhysicsCmp_t>(enemy, game::PhysicsCmp_t{._x=.0, ._y=.0, ._z=.0});
-    EntityMan.addComponent<game::AICmp_t>(enemy, player.getId());
-    assert(enemy.getMaskCmp() == 0b110 && "bad enemy mask");
-
-
-    // Se types in execution time.
+    // See types in execution time.
     seetype(uvengcfg::CmpStorage_t{});
     seetype(uvengcfg::CmpStorage_t::container_t{});
     seetype(uvengcfg::EManager_t::CmpStorage_t{});
     seetype(uvengcfg::EManager_t::CmpStorage_t::container_t{});
     seetype(uvengcfg::EManager_t::Entity_t::keystorage_t{});
+
+    // Set world
+    createWorld(EntityMan, IrrDevice);
 
     // RUN
     IrrDevice.addStaticText();
@@ -110,7 +129,6 @@ try {
         PhysicsSys.update(EntityMan);
     }
 
-    
     //std::cout<<cmpStorage.getMask<game::PhysicsCmp_t>()<<'\n';
     //std::cout<<cmpStorage.getMask<game::RenderCmp_t>()<<'\n';
     //std::cout<<cmpStorage.getMask<game::AICmp_t>()<<'\n';

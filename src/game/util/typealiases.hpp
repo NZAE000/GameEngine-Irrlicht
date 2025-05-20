@@ -1,11 +1,8 @@
 #pragma once
-#include<iostream>
 #include<engine/man/entitymanager.hpp>
 #include<game/cmp/aicmp.hpp>
 #include<game/cmp/physicscmp.hpp>
 #include<game/cmp/rendercmp.hpp>
-
-void seetype(auto) { std::cout<<__PRETTY_FUNCTION__<< '\n'; }
 
 // Game aliases
 namespace game {

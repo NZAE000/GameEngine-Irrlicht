@@ -19,14 +19,10 @@ struct GFXDevice_t {
         if (!device) throw std::runtime_error("Can't initialize irrlicht device"); // Check!!
 
         device->setWindowCaption(L"window - Irrlicht demo");    // Title
-        sceneMan_->addCameraSceneNodeFPS();                     // Add camera!
+        camera_ = sceneMan_->addCameraSceneNodeFPS();     // Add camera (first person)!
     }
 
-// Methods
-    void addStaticText(){
-        guiEnv_->addStaticText(L"Irrlicht game!!", irr::core::rect<irr::s32>(10, 10, 260, 22), true);
-    }
-
+// Methods ############################################
     bool run() const  { return device_->run();      }
     void beginScene() { videoDriver_->beginScene(true, true, irr::video::SColor(255,100,101,140)); } // The beginScene call clears the screen with a color and the depth buffer
     void endScene()   { videoDriver_->endScene();   }
@@ -36,20 +32,10 @@ struct GFXDevice_t {
         guiEnv_->drawAll();
     }
 
-    irr::scene::ISceneNode* createSphere(std::string_view path_texture)
-    {
-        irr::scene::ISceneNode* node = sceneMan_->addSphereSceneNode();
-        if (!node) throw std::runtime_error("Couldn't create sphere");
-
-        auto* texture { videoDriver_->getTexture(path_texture.data()) };
-        if (!texture) throw std::runtime_error("Couldn't create texture");
-
-        node->setPosition(irr::core::vector3df(0, 0, 30));
-        node->setMaterialTexture(0, texture);
-        node->setMaterialFlag(irr::video::EMF_LIGHTING, false);
-        
-        return node;
-    }
+    void addStaticText(){ guiEnv_->addStaticText(L"Irrlicht game!!", irr::core::rect<irr::s32>(10, 10, 260, 22), true); }
+    irr::scene::ISceneNode&        createSphere(std::string_view texture_path);
+    irr::scene::ITerrainSceneNode& createTerrain(std::string_view map_path, std::string_view texture_path);    
+    irr::scene::ICameraSceneNode&  getCamera() noexcept { return *camera_; }
 
 private:
 
@@ -77,6 +63,7 @@ private:
     irr::video::IVideoDriver * const videoDriver_ { device_.get()? device_->getVideoDriver()    : nullptr };
     irr::scene::ISceneManager* const sceneMan_    { device_.get()? device_->getSceneManager()   : nullptr };
     irr::gui::IGUIEnvironment* const guiEnv_      { device_.get()? device_->getGUIEnvironment() : nullptr };
+    irr::scene::ICameraSceneNode* camera_         { nullptr }; 
 };
 
 } // namespace uvengine 

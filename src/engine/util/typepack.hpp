@@ -14,7 +14,6 @@ namespace uvengine {
     template<typename T>
     struct type_of { using type = T; };
 
-
 /* IS_SAME ################################################################ */
     template<typename T, typename U>
     struct is_same : constant_t<bool, false> {};
@@ -59,7 +58,7 @@ namespace uvengine {
     template<typename T, typename U, typename...  Types>
     struct position_of_type<T, U, Types...> : constant_t<uint8_t, position_of_type_v<T, Types...> + 1> {};
 
-/*  IF_ELSE ######################################################### */
+/* IF_ELSE ######################################################### */
     template<bool condition, typename T1, typename T2>
     struct if_else : type_of<T1> {}; 
     // Partial specialization: case false.
@@ -69,8 +68,7 @@ namespace uvengine {
     template<bool condition, typename T1, typename T2>
     using if_else_t = typename if_else<condition, T1, T2>::type;
 
-
-/*  REPLACE_CONTAINER ######################################################### */
+/* REPLACE_CONTAINER ######################################################### */
     template<typename Type, template<typename...> class new_container>
     struct replace_container {};
 
