@@ -7,7 +7,7 @@ namespace uvengine {
 
 
 template<typename CMPPACK, typename TAGPACK, std::size_t CAPACITY=100>
-struct EntityManager_t {  static_assert(false, "EntityManager_t: TypePack_t<Ts...> parameters requeried"); };
+struct EntityManager_t { static_assert(false, "EntityManager_t: TypePack_t<Ts...> parameters requeried"); };
 
 // Partial specialization: TypePack_t<Ts...> parameters requeried.
 template<typename... Cmps, typename... Tags, std::size_t CAPACITY>

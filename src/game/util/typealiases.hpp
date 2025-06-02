@@ -23,8 +23,8 @@ namespace uvengcfg {
 
 using CMP_PACK     = uvengine::TypePack_t<game::RenderCmp_t, game::AICmp_t, game::PhysicsCmp_t>;
 using TAG_PACK     = uvengine::TypePack_t<game::TGPlayer, game::TGEnemy, game::TGBullet, game::TGPursue, game::TGSuperKick, game::TGSuperJump>;
-using CmpStorage_t = uvengine::ComponentStorage_t<CMP_PACK, TAG_PACK>;
-using EManager_t   = uvengine::EntityManager_t<CMP_PACK, TAG_PACK>; 
-using Entity_t     = uvengine::EntityManager_t<CMP_PACK, TAG_PACK>::Entity_t; 
+using EManager_t   = uvengine::EntityManager_t<CMP_PACK, TAG_PACK>;
+using CmpStorage_t = EManager_t::CmpStorage_t;
+using Entity_t     = EManager_t::Entity_t;
 
 } // namespace uvengine

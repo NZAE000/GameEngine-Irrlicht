@@ -4,13 +4,15 @@
 namespace uvengine {
 
 
-// template<typename PACK>
-//struct PackTraits_t { static_assert(false, "ComponentStorage_t::PackTraits_t: TypePack<ts..> parameter requeried."); };
-
-
-template<typename CMPPACK, typename TAGPACK, std::size_t CAPACITY=100> 
-struct ComponentStorage_t {
-
+template<typename CMPPACK, typename TAGPACK, std::size_t CAPACITY>
+struct ComponentStorage_t { static_assert(false, "ComponentStorage_t: TypePack<ts..> parameter requeried."); };
+//
+//
+//// Partial specialization: TypePack_t<Ts...> parameters requeried.
+template<typename... Cmps, typename... Tags, std::size_t CAPACITY>
+struct ComponentStorage_t<TypePack_t<Cmps...>, TypePack_t<Tags...>, CAPACITY> {
+//template<typename CMPPACK, typename TAGPACK, std::size_t CAPACITY=100>
+//struct ComponentStorage_t {
 private:
     // Wrapper to PACK = TypPack_t<Ts...>
     template<typename PACK>
@@ -28,6 +30,8 @@ private:
 
 public:
 
+    using CMPPACK = TypePack_t<Cmps...>;
+    using TAGPACK = TypePack_t<Tags...>;
     using tag_cfg = PackTraits_t<TAGPACK>; // TAGPACK = TypePack_t<Types...>
     using cmp_cfg = PackTraits_t<CMPPACK>; // CMPPACK = TypePack_t<Types...>
 
