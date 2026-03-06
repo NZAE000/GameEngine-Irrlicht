@@ -1,3 +1,4 @@
+#pragma once
 #include <engine/util/typepack.hpp>
 #include  <engine/util/slotmap.hpp>
 
