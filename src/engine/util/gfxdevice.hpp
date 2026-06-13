@@ -20,6 +20,8 @@ struct GFXDevice_t {
 
         device->setWindowCaption(L"window - Irrlicht demo");    // Title
         camera_ = sceneMan_->addCameraSceneNodeFPS();     // Add camera (first person)!
+
+        device_->getFileSystem()->changeWorkingDirectoryTo("GameEngine-Irrlicht");
     }
 
 // Methods ############################################

@@ -62,7 +62,7 @@ void seetype(auto) { std::cout<<__PRETTY_FUNCTION__<< '\n'; }
 void createWorld(uvengcfg::EManager_t& EntMan, uvengine::GFXDevice_t& IrrDevice)
 {
     // Set world's terrain and texture.
-    auto& terrain = IrrDevice.createTerrain("/Users/eliezerzuniga/Documents/progra/c++/irrlicht/GameEngine-Irrlicht/media/terrain.bmp", "/Users/eliezerzuniga/Documents/progra/c++/irrlicht/GameEngine-Irrlicht/media/ground.bmp");
+    auto& terrain = IrrDevice.createTerrain("media/terrain.bmp", "media/ground.bmp");
     irr::core::aabbox3d<irr::f32> terrainBound = terrain.getBoundingBox();
 
     // Set camera position
@@ -73,13 +73,13 @@ void createWorld(uvengcfg::EManager_t& EntMan, uvengine::GFXDevice_t& IrrDevice)
     // First entity.
     auto& sphere1 { EntMan.createEntity() };
     [[maybe_unused]] auto& phycmp1 = EntMan.addComponent<game::PhysicsCmp_t>(sphere1, game::PhysicsCmp_t{._x=-10.0f, ._z=-10.0f, ._vy=.005f});
-    EntMan.addComponent<game::RenderCmp_t>(sphere1, &IrrDevice.createSphere("/Users/eliezerzuniga/Documents/progra/c++/irrlicht/GameEngine-Irrlicht/media/wall.bmp"));
+    EntMan.addComponent<game::RenderCmp_t>(sphere1, &IrrDevice.createSphere("media/wall.bmp"));
     //[[maybe_unused]] auto const& rencmp1 = EntMan.getComponent<game::RenderCmp_t>(sphere1);
 
     // Second entity.
     auto& sphere2 { EntMan.createEntity() };
     [[maybe_unused]] auto& phycmp2 = EntMan.addComponent<game::PhysicsCmp_t>(sphere2, game::PhysicsCmp_t{._x=10.0f, ._z=-10.0f, ._vy=.003f});
-    EntMan.addComponent<game::RenderCmp_t>(sphere2, &IrrDevice.createSphere("/Users/eliezerzuniga/Documents/progra/c++/irrlicht/GameEngine-Irrlicht/media/wall.bmp"));
+    EntMan.addComponent<game::RenderCmp_t>(sphere2, &IrrDevice.createSphere("media/wall.bmp"));
     //std::cout<<"x: "<<phycmp1._x<<" y: "<<phycmp1._y<<" z: "<<phycmp1._z<<'\n';
 
 // Entities to assert test.

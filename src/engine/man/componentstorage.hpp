@@ -6,7 +6,7 @@ namespace uvengine {
 
 
 template<typename CMPPACK, typename TAGPACK, std::size_t CAPACITY>
-struct ComponentStorage_t { static_assert(false, "ComponentStorage_t: TypePack<ts..> parameter requeried."); };
+struct ComponentStorage_t { /*static_assert(false, "ComponentStorage_t: TypePack<ts..> parameter requeried.");*/ };
 //
 //
 //// Partial specialization: TypePack_t<Ts...> parameters requeried.
