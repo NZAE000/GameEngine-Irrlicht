@@ -15,25 +15,25 @@
 void compile_time_verifications()
 {
 // Verify cmps and tags
-    static_assert(uvengcfg::TAG_PACK::size() == 6, "That is not the size.");
-    static_assert(uvengcfg::TAG_PACK::has<game::TGSuperKick>() == true, "That type is not there.");
-    static_assert(std::is_same_v<uvengcfg::TAG_PACK::type_of_pos<1>, game::TGEnemy>, "That type is not in that position.");
-    static_assert(uvengcfg::TAG_PACK::id<game::TGEnemy>() == 1, "That type is not in that position.");
-    static_assert(uvengcfg::TAG_PACK::id<game::TGSuperJump>() == 5, "That type is not in that position.");
-    static_assert(uvengcfg::TAG_PACK::mask<game::TGPlayer>() == 0b01, "That type is not in that position.");
-    static_assert(uvengcfg::TAG_PACK::mask<game::TGEnemy>() == 0b10, "That type is not in that position.");
-    static_assert(uvengcfg::TAG_PACK::mask<game::TGPlayer, game::TGEnemy>() == 0b11, "That type is not in that position.");
-    static_assert(std::is_same_v<uvengcfg::TAG_PACK::mask_t, uint8_t>, "Is not mask type.");
+    static_assert(uvengcfg::TAG_PACK::size() == 6,                                      "That is not the size.");
+    static_assert(uvengcfg::TAG_PACK::has<game::TGSuperKick>() == true,                 "That type is not there.");
+    static_assert(std::is_same_v<uvengcfg::TAG_PACK::type_of_pos<1>, game::TGEnemy>,    "That type is not in that position.");
+    static_assert(uvengcfg::TAG_PACK::id<game::TGEnemy>() == 1,                         "That type is not in that position.");
+    static_assert(uvengcfg::TAG_PACK::id<game::TGSuperJump>() == 5,                     "That type is not in that position.");
+    static_assert(uvengcfg::TAG_PACK::mask<game::TGPlayer>() == 0b01,                   "That type is not in that position.");
+    static_assert(uvengcfg::TAG_PACK::mask<game::TGEnemy>() == 0b10,                    "That type is not in that position.");
+    static_assert(uvengcfg::TAG_PACK::mask<game::TGPlayer, game::TGEnemy>() == 0b11,    "That type is not in that position.");
+    static_assert(std::is_same_v<uvengcfg::TAG_PACK::mask_t, uint8_t>,                  "Is not mask type.");
 
-    static_assert(uvengcfg::CmpStorage_t::tag_cfg::size() == 6, "That is not the size.");
-    static_assert(uvengcfg::CmpStorage_t::tag_cfg::has<game::TGPlayer>() == true, "That type is not there.");
-    static_assert(std::is_same_v<uvengcfg::CmpStorage_t::tag_cfg::type_of_pos<1>, game::TGEnemy>, "That type is not in that position.");
-    static_assert(uvengcfg::CmpStorage_t::tag_cfg::id<game::TGEnemy>() == 1, "That type is not in that position.");
-    static_assert(uvengcfg::CmpStorage_t::tag_cfg::id<game::TGSuperJump>() == 5, "That type is not in that position.");
-    static_assert(uvengcfg::CmpStorage_t::tag_cfg::mask<game::TGPlayer>() == 0b01, "That type is not in that position.");
-    static_assert(uvengcfg::CmpStorage_t::tag_cfg::mask<game::TGEnemy>() == 0b10, "That type is not in that position.");
-    static_assert(uvengcfg::CmpStorage_t::tag_cfg::mask<game::TGPlayer, game::TGEnemy>() == 0b11, "That type is not in that position.");
-    static_assert(std::is_same_v<uvengcfg::CmpStorage_t::tag_cfg::mask_t, uint8_t>, "Is not mask type.");
+    static_assert(uvengcfg::CmpStorage_t::tag_cfg::size() == 6,                                     "That is not the size.");
+    static_assert(uvengcfg::CmpStorage_t::tag_cfg::has<game::TGPlayer>() == true,                   "That type is not there.");
+    static_assert(std::is_same_v<uvengcfg::CmpStorage_t::tag_cfg::type_of_pos<1>, game::TGEnemy>,   "That type is not in that position.");
+    static_assert(uvengcfg::CmpStorage_t::tag_cfg::id<game::TGEnemy>() == 1,                        "That type is not in that position.");
+    static_assert(uvengcfg::CmpStorage_t::tag_cfg::id<game::TGSuperJump>() == 5,                    "That type is not in that position.");
+    static_assert(uvengcfg::CmpStorage_t::tag_cfg::mask<game::TGPlayer>() == 0b01,                  "That type is not in that position.");
+    static_assert(uvengcfg::CmpStorage_t::tag_cfg::mask<game::TGEnemy>() == 0b10,                   "That type is not in that position.");
+    static_assert(uvengcfg::CmpStorage_t::tag_cfg::mask<game::TGPlayer, game::TGEnemy>() == 0b11,   "That type is not in that position.");
+    static_assert(std::is_same_v<uvengcfg::CmpStorage_t::tag_cfg::mask_t, uint8_t>,                 "Is not mask type.");
 
 // Verify vector 3d operators
     using Vect3f_t = uvengine::Vect3_t<float>;
@@ -106,10 +106,10 @@ try {
 
     //compile_time_verifications();
 
-    uvengcfg::EManager_t  EntityMan {};
-    uvengine::GFXDevice_t IrrDevice {800, 600};
-    game::RenderSys_t     RenderSys{};
-    game::PhysicsSys_t    PhysicsSys{};
+    uvengcfg::EManager_t  EntityMan  {};
+    uvengine::GFXDevice_t IrrDevice  {800, 600};
+    game::RenderSys_t     RenderSys  {};
+    game::PhysicsSys_t    PhysicsSys {};
 
     // See types in execution time.
     seetype(uvengcfg::CmpStorage_t{});

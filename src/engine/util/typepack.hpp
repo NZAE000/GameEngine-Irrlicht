@@ -87,7 +87,7 @@ namespace uvengine {
     
     // Partial specialization: first param must be template<Types...>.
     template<template<typename...> class current_container, typename... Types, template<typename...> class new_container>
-    struct for_all_wrap<current_container<Types...>, new_container> : type_of<std::tuple<new_container<Types>...>>{};
+    struct for_all_wrap<current_container<Types...>, new_container> : type_of<current_container<new_container<Types>...>>{};
 
     // Alias helper: avoid 'typename' and '::type'.
     template<typename Type, template<typename...> class container>
