@@ -1,83 +1,90 @@
 #pragma once
 #include<cmath>
 
-namespace uvengine { 
+namespace uvengine {
+    namespace math {
+
+    // VECTOR 3D ########################################################################################
+    template<typename TYPE>
+    requires std::integral<TYPE> || std::floating_point<TYPE> // Constrains.
+    struct Vect3_t {
+
+        constexpr Vect3_t() = default;
+        constexpr Vect3_t(TYPE x, TYPE y, TYPE z) 
+        : x_{x}, y_{y}, z_{z} {}
 
 
-template<typename TYPE>
-requires std::integral<TYPE> || std::floating_point<TYPE> // Constrains.
-struct Vect3_t {
+    // OPERATORS ! ######################################
 
-    constexpr Vect3_t() = default;
-    constexpr Vect3_t(TYPE x, TYPE y, TYPE z) 
-    : x_{x}, y_{y}, z_{z} {}
+    // Spaceship operator (==, !=, >, <, >=, <=)
+        constexpr auto operator<=>(Vect3_t const& rhs_op) const noexcept = default;
 
+    // Sum
+        constexpr Vect3_t operator+(Vect3_t const& rhs_op) const noexcept { // rhs = right hand side.
+            return {
+                x_ + rhs_op.x_,
+                y_ + rhs_op.y_,
+                z_ + rhs_op.z_
+            };
+        }
 
-// OPERATORS ! #####################################################################################
+    // Sub
+        constexpr Vect3_t operator-(Vect3_t const& rhs_op) const noexcept {
+            return {
+                x_ - rhs_op.x_,
+                y_ - rhs_op.y_,
+                z_ - rhs_op.z_
+            };
+        }
 
-// Spaceship operator (==, !=, >, <, >=, <=)
-    constexpr auto operator<=>(Vect3_t const& rhs_op) const noexcept = default;
+    // Dot product operator.
+        constexpr TYPE operator*(Vect3_t const& rhs_op) const noexcept {
+            return x_ * rhs_op.x_ + 
+                y_ * rhs_op.y_ + 
+                z_ * rhs_op.z_;
+        }
 
-// Sum
-    constexpr Vect3_t operator+(Vect3_t const& rhs_op) const noexcept { // rhs = right hand side.
-        return {
-            x_ + rhs_op.x_,
-            y_ + rhs_op.y_,
-            z_ + rhs_op.z_
-        };
-    }
+    // Scalar product.
+        constexpr Vect3_t operator*(TYPE const scale) const noexcept { // this * n
+            return { 
+                scale * x_, 
+                scale * y_ , 
+                scale * z_  
+            };
+        }
+        friend constexpr Vect3_t operator*(TYPE const scale, Vect3_t const& vec) noexcept { // Available n * this.
+            return vec * scale;
+        }
 
-// Sub
-    constexpr Vect3_t operator-(Vect3_t const& rhs_op) const noexcept {
-        return {
-            x_ - rhs_op.x_,
-            y_ - rhs_op.y_,
-            z_ - rhs_op.z_
-        };
-    }
+    // Distance
+        constexpr TYPE lengthSqrt(void) const noexcept { return x_*x_ + y_*y_ + z_*z_;  } // Distane without square root.
+        constexpr TYPE length(void)     const noexcept { return std::sqrt(lengthSqrt()); }
 
-// Dot product operator.
-    constexpr TYPE operator*(Vect3_t const& rhs_op) const noexcept {
-        return x_ * rhs_op.x_ + 
-               y_ * rhs_op.y_ + 
-               z_ * rhs_op.z_;
-    }
+    // Normalize
+        constexpr Vect3_t& normalize(void) noexcept
+        {
+            x_ /= length();
+            y_ /= length();
+            z_ /= length();
+            return *this;
+        }
 
-// Scalar product.
-    constexpr Vect3_t operator*(TYPE const scale) const noexcept { // this * n
-        return { 
-            scale * x_, 
-            scale * y_ , 
-            scale * z_  
-        };
-    }
-    friend constexpr Vect3_t operator*(TYPE const scale, Vect3_t const& vec) noexcept { // Available n * this.
-        return vec * scale;
-    }
+        constexpr Vect3_t normalized(void) const noexcept
+        {
+            Vect3_t cp_this { *this };
+            return cp_this.normalize();
+        }
 
-// Distance
-    constexpr TYPE lengthSqrt(void) const noexcept { return x_*x_ + y_*y_ + z_*z_;  } // Distane without square root.
-    constexpr TYPE length(void)     const noexcept { return std::sqrt(lengthSqrt()); }
-
-// Normalize
-    constexpr Vect3_t& normalize(void) noexcept
-    {
-        x_ /= length();
-        y_ /= length();
-        z_ /= length();
-        return *this;
-    }
-
-    constexpr Vect3_t normalized(void) const noexcept
-    {
-        Vect3_t cp_this { *this };
-        return cp_this.normalize();
-    }
+        [[nodiscard]] constexpr TYPE x() const noexcept { return x_; }
+        [[nodiscard]] constexpr TYPE y() const noexcept { return y_; }
+        [[nodiscard]] constexpr TYPE z() const noexcept { return z_; } 
 
 
-private:
-    TYPE x_{}, y_{}, z_{}; // zero default
+    private:
+        TYPE x_{}, y_{}, z_{}; // zero default.
 
-};
+    };
+
+    } // namespace math
 
 } // namespace uvengine 

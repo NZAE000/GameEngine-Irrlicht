@@ -17,7 +17,8 @@ struct RenderSysIrr_t {
         Eman.forEach<REQUIRED_CMPS, REQUIRED_TAGS>(
         [](game::RenderCmpIrr_t& rencmp, game::PhysicsCmp_t const& phycmp)
         {
-            rencmp.node->setPosition(irr::core::vector3df{phycmp._x, phycmp._y, phycmp._z});
+            auto const& pos { phycmp.position_ };
+            rencmp.node->setPosition(irr::core::vector3df{pos.x(), pos.y(), pos.z()});
         });
 
         //Eman.forEach<game::RenderCmp_t, game::PhysicsCmp_t>

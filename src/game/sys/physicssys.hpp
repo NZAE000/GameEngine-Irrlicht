@@ -15,9 +15,11 @@ struct PhysicsSys_t {
     { 
         Eman.forEach<REQUIRED_CMPS, REQUIRED_TAGS>([](game::PhysicsCmp_t& phycmp)
         {
-            phycmp._x += phycmp._vx;
-            phycmp._y += phycmp._vy;
-            phycmp._z += phycmp._vz;
+            phycmp.position_ = phycmp.position_ + phycmp.velocity_;
+            
+            //phycmp._x += phycmp._vx;
+            //phycmp._y += phycmp._vy;
+            //phycmp._z += phycmp._vz;
         }); 
 
         //Eman.forEach<game::PhysicsCmp_t>([](uvengcfg::Entity_t& entity, game::PhysicsCmp_t& phycmp)
