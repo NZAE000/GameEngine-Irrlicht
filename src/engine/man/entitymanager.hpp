@@ -1,6 +1,7 @@
 #pragma once
 #include<cstdint>
 #include<vector>
+#include<algorithm>
 #include "componentstorage.hpp"
 
 namespace uvengine {
@@ -36,29 +37,31 @@ struct EntityManager_t<TypePack_t<Cmps...>, TypePack_t<Tags...>, CAPACITY> {
 
         // ADD TAG MASK.
         template<typename... Tgs>
-        void addTag() noexcept { _mask_tag |= CmpStorage_t::tag_cfg::template mask<Tgs...>(); }
+        void addTag()    noexcept   { _tag_mask |= CmpStorage_t::tag_cfg::template mask<Tgs...>(); }
         template<typename... Tgs>
-        void removeTag() noexcept { _mask_tag ^= CmpStorage_t::tag_cfg::template mask<Tgs...>(); }
+        void removeTag() noexcept   { _tag_mask ^= CmpStorage_t::tag_cfg::template mask<Tgs...>(); }
 
         // HAS MASK.
         template<typename... Cps>
-        bool hasCmp() const noexcept { return _mask_cmp & CmpStorage_t::cmp_cfg::template mask<Cps...>(); }
+        bool hasCmp() const noexcept { return _cmp_mask & CmpStorage_t::cmp_cfg::template mask<Cps...>(); }
         template<typename... Tgs>
-        bool hasTag() const noexcept { return _mask_tag & CmpStorage_t::tag_cfg::template mask<Tgs...>(); }
+        bool hasTag() const noexcept { return _tag_mask & CmpStorage_t::tag_cfg::template mask<Tgs...>(); }
 
         // GET MASK.
-        cmp_mask_t getMaskCmp() const noexcept { return _mask_cmp; }
-        tag_mask_t getMaskTag() const noexcept { return _mask_tag; }
+        cmp_mask_t getMaskCmp() const noexcept { return _cmp_mask; }
+        tag_mask_t getMaskTag() const noexcept { return _tag_mask; }
 
         friend struct EntityManager_t<CMPPACK, TAGPACK, CAPACITY>; // Only entity manager can access to private members.
     
     // ENTITY MANAGER ACCESS ONLY.
     private:
-        inline static std::size_t NEX_ID {0};
-        std::size_t  _id {++NEX_ID};
-        keystorage_t _cmpkeys{};
-        cmp_mask_t   _mask_cmp{};
-        tag_mask_t   _mask_tag{};
+        
+        std::size_t  _id        {++_NEX_ID};
+        keystorage_t _cmpkeys   {};
+        cmp_mask_t   _cmp_mask  {};
+        tag_mask_t   _tag_mask  {};
+
+        inline static std::size_t _NEX_ID {0};
 
         template<typename Cmp>
         void addCmp(to_key_t<Cmp>& key) noexcept
@@ -66,7 +69,7 @@ struct EntityManager_t<TypePack_t<Cmps...>, TypePack_t<Tags...>, CAPACITY> {
             static_assert(CmpStorage_t::cmp_cfg::template has<Cmp>(), "Entity_t::addCmp: cmp not found into cmpcfg."); // Compilation time.
             assert(!hasCmp<Cmp>() && "Entity_t::addCmp: component was already added."); // Execution time.
 
-            _mask_cmp |= CmpStorage_t::cmp_cfg::template mask<Cmp>(); // Update cmp mask.
+            _cmp_mask |= CmpStorage_t::cmp_cfg::template mask<Cmp>(); // Update cmp mask.
             std::get<to_key_t<Cmp>>(_cmpkeys) = key;
         }
 
@@ -153,6 +156,18 @@ struct EntityManager_t<TypePack_t<Cmps...>, TypePack_t<Tags...>, CAPACITY> {
 
 private:
 
+    std::vector<Entity_t> _entities{};
+    CmpStorage_t          _storage{};
+
+    template<typename Cmp, typename... Params>
+    Cmp& createComponent(Entity_t& entity, Params&&... args) noexcept 
+    {
+        auto& container = _storage.template getContainer<Cmp>(); // Slotmap_t, f. eg.
+        to_key_t<Cmp> key = container.insert( Cmp{std::forward<Params>(args)...} );
+        entity.template addCmp<Cmp>(key);
+        return container[key];
+    }
+
     // WITH TAG DISPATCH. 
     template<typename... Cps, typename... Tgs>
     void forEach_impl(auto&& process, TypePack_t<Cps...>, TypePack_t<Tgs...>)
@@ -165,19 +180,6 @@ private:
             if (hasCmps && hasTags)
                 process(getComponent<Cps>(entity)...);
         }
-    }
-
-
-    std::vector<Entity_t> _entities{};
-    CmpStorage_t          _storage{};
-
-    template<typename Cmp, typename... Params>
-    Cmp& createComponent(Entity_t& entity, Params&&... args) noexcept 
-    {
-        auto& container = _storage.template getContainer<Cmp>(); // Slotmap_t, f. eg.
-        to_key_t<Cmp> key = container.insert(Cmp{std::forward<Params>(args)...});
-        entity.template addCmp<Cmp>(key);
-        return container[key];
     }
 };
 

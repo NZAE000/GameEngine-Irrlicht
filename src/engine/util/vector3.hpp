@@ -5,6 +5,7 @@ namespace uvengine {
 
 
 template<typename TYPE>
+requires std::integral<TYPE> || std::floating_point<TYPE> // Constrains.
 struct Vect3_t {
 
     constexpr Vect3_t() = default;
@@ -35,12 +36,14 @@ struct Vect3_t {
         };
     }
 
-// Dot product operators
+// Dot product operator.
     constexpr TYPE operator*(Vect3_t const& rhs_op) const noexcept {
         return x_ * rhs_op.x_ + 
                y_ * rhs_op.y_ + 
                z_ * rhs_op.z_;
     }
+
+// Scalar product.
     constexpr Vect3_t operator*(TYPE const scale) const noexcept { // this * n
         return { 
             scale * x_, 
@@ -48,12 +51,12 @@ struct Vect3_t {
             scale * z_  
         };
     }
-    friend constexpr Vect3_t operator*(TYPE const scale, Vect3_t const& vec) noexcept { // Available n * this
+    friend constexpr Vect3_t operator*(TYPE const scale, Vect3_t const& vec) noexcept { // Available n * this.
         return vec * scale;
     }
 
 // Distance
-    constexpr TYPE lengthSqrt(void) const noexcept { return x_*x_ + y_*y_ + z_*z_;  } // Distane without square root
+    constexpr TYPE lengthSqrt(void) const noexcept { return x_*x_ + y_*y_ + z_*z_;  } // Distane without square root.
     constexpr TYPE length(void)     const noexcept { return std::sqrt(lengthSqrt()); }
 
 // Normalize
@@ -63,6 +66,12 @@ struct Vect3_t {
         y_ /= length();
         z_ /= length();
         return *this;
+    }
+
+    constexpr Vect3_t normalized(void) noexcept
+    {
+        Vect3_t cp_this { *this };
+        return cp_this.normalize();
     }
 
 

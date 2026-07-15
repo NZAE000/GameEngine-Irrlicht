@@ -1,15 +1,12 @@
-APP := irrgame
-CC := clang++ -std=c++20
-CCFLAGS := -Wall #-Wpedantic -Wextra -Wconversion
-
-
-SRCDIR := src
-OBJDIR := obj
-SUBDIRS    := $(shell find $(SRCDIR) -type d)
-OBJSUBDIRS := $(patsubst $(SRCDIR)%,$(OBJDIR)%,$(SUBDIRS))
-ALLCPPS    := $(shell find $(SRCDIR) -type f -iname *.cpp)
-ALLOBJS    := $(patsubst $(SRCDIR)%,$(OBJDIR)%,$(patsubst %.cpp,%.o,$(ALLCPPS)))
-
+APP 	    := irrgame
+CC 		    := clang++
+CCFLAGS     := -std=c++23 -Wall #-Wpedantic -Wextra -Wconversion
+SRCDIR 	    := src
+OBJDIR 	    := obj
+SUBDIRS     := $(shell find $(SRCDIR) -type d)
+OBJSUBDIRS  := $(patsubst $(SRCDIR)%,$(OBJDIR)%,$(SUBDIRS))
+ALLCPPS     := $(shell find $(SRCDIR) -type f -iname *.cpp)
+ALLOBJS     := $(patsubst $(SRCDIR)%,$(OBJDIR)%,$(patsubst %.cpp,%.o,$(ALLCPPS)))
 INCLUDEPATH := -I $(SRCDIR)
 LIBPATH 	:=
 UNAME       := $(shell uname)

@@ -1,6 +1,6 @@
 #pragma once
 #include<game/util/typealiases.hpp>
-#include<engine/util/gfxdevice.hpp>
+#include<game/util/irrinterface.hpp>
 
 namespace game {
 
@@ -11,7 +11,7 @@ struct RenderSys_t {
 
     explicit RenderSys_t() = default;
 
-    void update(uvengcfg::EManager_t& Eman, uvengine::GFXDevice_t& gfx)
+    void update(uvengcfg::EManager_t& Eman, game::irrinterface::GFXDevice_t& gfx)
     {
 
         Eman.forEach<REQUIRED_CMPS, REQUIRED_TAGS>(

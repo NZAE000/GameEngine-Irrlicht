@@ -2,14 +2,14 @@
 #include<stdexcept>
 #include<memory>
 #include<cstdint>
-#include<cassert>
 #include<type_traits>
 #include<game/util/typealiases.hpp>
 #include<game/sys/rendersys.hpp>
 #include<game/sys/physicssys.hpp>
-#include<engine/util/gfxdevice.hpp>
+#include<game/util/irrinterface.hpp>
 #include<engine/util/vector3.hpp>
 //#define NDEBUG
+#include<cassert>
 
 
 void compile_time_verifications()
@@ -59,7 +59,7 @@ void compile_time_verifications()
 void seetype(auto) { std::cout<<__PRETTY_FUNCTION__<< '\n'; }
 
 
-void createWorld(uvengcfg::EManager_t& EntMan, uvengine::GFXDevice_t& IrrDevice)
+void createWorld(uvengcfg::EManager_t& EntMan, game::irrinterface::GFXDevice_t& IrrDevice)
 {
     // Set world's terrain and texture.
     auto& terrain = IrrDevice.createTerrain("media/terrain.bmp", "media/ground.bmp");
@@ -92,7 +92,7 @@ void createWorld(uvengcfg::EManager_t& EntMan, uvengine::GFXDevice_t& IrrDevice)
     EntMan.addComponent<game::AICmp_t>(enemy, player.getId());
     
     // Execution time verification (with debug)
-    assert(player.getMaskTag() == 0 && "");
+    assert(player.getMaskTag() == 0 && "Player entity: incompatible mask tag");
     player.addTag<game::TGPlayer, game::TGSuperKick>();
     assert((player.hasTag<game::TGPlayer, game::TGSuperKick>()) && "It have not mask");
     player.removeTag<game::TGSuperKick>();
@@ -106,10 +106,10 @@ try {
 
     //compile_time_verifications();
 
-    uvengcfg::EManager_t  EntityMan  {};
-    uvengine::GFXDevice_t IrrDevice  {800, 600};
-    game::RenderSys_t     RenderSys  {};
-    game::PhysicsSys_t    PhysicsSys {};
+    uvengcfg::EManager_t            EntityMan  {};
+    game::irrinterface::GFXDevice_t IrrDevice  {800, 600};
+    game::RenderSys_t               RenderSys  {};
+    game::PhysicsSys_t              PhysicsSys {};
 
     // See types in execution time.
     seetype(uvengcfg::CmpStorage_t{});
@@ -118,10 +118,10 @@ try {
     seetype(uvengcfg::EManager_t::CmpStorage_t::container_t{});
     seetype(uvengcfg::EManager_t::Entity_t::keystorage_t{});
 
-    // Set world
+    // Set world.
     createWorld(EntityMan, IrrDevice);
 
-    // RUN
+    // RUN.
     IrrDevice.addStaticText();
     while(IrrDevice.run())
     {

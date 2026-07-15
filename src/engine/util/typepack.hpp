@@ -29,7 +29,7 @@ namespace uvengine {
 
 /* TYPE OF POSITION ######################################################### */
     template<uint8_t pos, typename... Types>
-    struct type_of_position { static_assert(sizeof...(Types) > 0, "type_of_position: there are not types."); };
+    struct type_of_position { static_assert(sizeof...(Types) > 0, "metaprog::type_of_position: there are not types."); };
 
     // Partial specialization: base case -> position 0.
     template<typename T, typename... Types>
