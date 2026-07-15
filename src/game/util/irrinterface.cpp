@@ -1,9 +1,7 @@
 #include "irrinterface.hpp"
-#define GL_SILENCE_DEPRECATION
 #ifdef __APPLE__
+#define GL_SILENCE_DEPRECATION
 #include <OpenGL/gl.h>
-#else
-#include <GL/gl.h>
 #endif
 //#include<iostream>
 
@@ -26,20 +24,16 @@ namespace game {
     // Match the viewport to the physical surface of the Retina/HiDPI.
     void GFXDevice_t::configureViewport()
     {
-        irr::core::dimension2du const& size { videoDriver_->getScreenSize() };
-
         #ifdef __APPLE__
+            irr::core::dimension2du const& size { videoDriver_->getScreenSize() };
             constexpr GLsizei scale = 2;
-        #else
-            constexpr GLsizei scale = 1;
-        #endif
-
-        glViewport(
+            glViewport(
             0,
             0,
             static_cast<GLsizei>(size.Width) * scale,
             static_cast<GLsizei>(size.Height) * scale
         );
+        #endif
     }
 
     irr::scene::ISceneNode& GFXDevice_t::

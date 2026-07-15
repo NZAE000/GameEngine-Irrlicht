@@ -8,7 +8,7 @@ OBJSUBDIRS  := $(patsubst $(SRCDIR)%,$(OBJDIR)%,$(SUBDIRS))
 ALLCPPS     := $(shell find $(SRCDIR) -type f -iname *.cpp)
 ALLOBJS     := $(patsubst $(SRCDIR)%,$(OBJDIR)%,$(patsubst %.cpp,%.o,$(ALLCPPS)))
 INCLUDEPATH := -I $(SRCDIR)
-LIBPATH 	:= -framework OpenGL
+LIBPATH 	:=
 UNAME       := $(shell uname)
 
 #Config paths
@@ -17,7 +17,7 @@ ifeq ($(UNAME),Linux)
 	LIBPATH += -lIrrlicht
 else ifeq ($(UNAME),Darwin)
 	INCLUDEPATH += -I /opt/homebrew/Cellar/irrlicht/1.8.5_1/include/
-	LIBPATH += -L /opt/homebrew/Cellar/irrlicht/1.8.5_1/lib -lIrrlicht
+	LIBPATH += -framework OpenGL -L /opt/homebrew/Cellar/irrlicht/1.8.5_1/lib -lIrrlicht
 else # windows
 	CCFLAGS +=
 endif
