@@ -3,7 +3,7 @@
 
 namespace game {
 
-struct RenderCmp_t {
+struct RenderCmpIrr_t {
     irr::scene::ISceneNode* node{nullptr};
 };
     

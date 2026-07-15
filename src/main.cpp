@@ -4,7 +4,7 @@
 #include<cstdint>
 #include<type_traits>
 #include<game/util/typealiases.hpp>
-#include<game/sys/rendersys.hpp>
+#include<game/sys/rendersysirr.hpp>
 #include<game/sys/physicssys.hpp>
 #include<game/util/irrinterface.hpp>
 #include<engine/util/vector3.hpp>
@@ -73,13 +73,13 @@ void createWorld(uvengcfg::EManager_t& EntMan, game::irrinterface::GFXDevice_t& 
     // First entity.
     auto& sphere1 { EntMan.createEntity() };
     [[maybe_unused]] auto& phycmp1 = EntMan.addComponent<game::PhysicsCmp_t>(sphere1, game::PhysicsCmp_t{._x=-10.0f, ._z=-10.0f, ._vy=.005f});
-    EntMan.addComponent<game::RenderCmp_t>(sphere1, &IrrDevice.createSphere("media/wall.bmp"));
-    //[[maybe_unused]] auto const& rencmp1 = EntMan.getComponent<game::RenderCmp_t>(sphere1);
+    EntMan.addComponent<game::RenderCmpIrr_t>(sphere1, &IrrDevice.createSphere("media/wall.bmp"));
+    //[[maybe_unused]] auto const& rencmp1 = EntMan.getComponent<game::RenderCmpIrr_t>(sphere1);
 
     // Second entity.
     auto& sphere2 { EntMan.createEntity() };
     [[maybe_unused]] auto& phycmp2 = EntMan.addComponent<game::PhysicsCmp_t>(sphere2, game::PhysicsCmp_t{._x=10.0f, ._z=-10.0f, ._vy=.003f});
-    EntMan.addComponent<game::RenderCmp_t>(sphere2, &IrrDevice.createSphere("media/wall.bmp"));
+    EntMan.addComponent<game::RenderCmpIrr_t>(sphere2, &IrrDevice.createSphere("media/wall.bmp"));
     //std::cout<<"x: "<<phycmp1._x<<" y: "<<phycmp1._y<<" z: "<<phycmp1._z<<'\n';
 
 // Entities to assert test.
@@ -108,7 +108,7 @@ try {
 
     uvengcfg::EManager_t            EntityMan  {};
     game::irrinterface::GFXDevice_t IrrDevice  {800, 600};
-    game::RenderSys_t               RenderSys  {};
+    game::RenderSysIrr_t               RenderSys  {};
     game::PhysicsSys_t              PhysicsSys {};
 
     // See types in execution time.
@@ -130,7 +130,7 @@ try {
     }
 
     //std::cout<<cmpStorage.getMask<game::PhysicsCmp_t>()<<'\n';
-    //std::cout<<cmpStorage.getMask<game::RenderCmp_t>()<<'\n';
+    //std::cout<<cmpStorage.getMask<game::RenderCmpIrr_t>()<<'\n';
     //std::cout<<cmpStorage.getMask<game::AICmp_t>()<<'\n';
 //
     //auto& phyContainer { cmpStorage.getContainer<game::PhysicsCmp_t>() };

@@ -4,18 +4,18 @@
 
 namespace game {
 
-struct RenderSys_t {
+struct RenderSysIrr_t {
 
-    using REQUIRED_CMPS = uvengine::TypePack_t<game::RenderCmp_t, game::PhysicsCmp_t>;
+    using REQUIRED_CMPS = uvengine::TypePack_t<game::RenderCmpIrr_t, game::PhysicsCmp_t>;
     using REQUIRED_TAGS = uvengine::TypePack_t<>;
 
-    explicit RenderSys_t() = default;
+    explicit RenderSysIrr_t() = default;
 
     void update(uvengcfg::EManager_t& Eman, game::irrinterface::GFXDevice_t& gfx)
     {
 
         Eman.forEach<REQUIRED_CMPS, REQUIRED_TAGS>(
-        [](game::RenderCmp_t& rencmp, game::PhysicsCmp_t const& phycmp)
+        [](game::RenderCmpIrr_t& rencmp, game::PhysicsCmp_t const& phycmp)
         {
             rencmp.node->setPosition(irr::core::vector3df{phycmp._x, phycmp._y, phycmp._z});
         });

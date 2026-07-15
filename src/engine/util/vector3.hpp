@@ -68,7 +68,7 @@ struct Vect3_t {
         return *this;
     }
 
-    constexpr Vect3_t normalized(void) noexcept
+    constexpr Vect3_t normalized(void) const noexcept
     {
         Vect3_t cp_this { *this };
         return cp_this.normalize();
