@@ -1,8 +1,46 @@
 #include "irrinterface.hpp"
+#define GL_SILENCE_DEPRECATION
+#ifdef __APPLE__
+#include <OpenGL/gl.h>
+#else
+#include <GL/gl.h>
+#endif
 //#include<iostream>
 
 namespace game {
     namespace irrinterface {
+
+    GFXDevice_t::GFXDevice_t(u32 w, u32 h)
+    : width_{w}, height_{h}
+    {   
+        irr::IrrlichtDevice* device { device_.get() };
+        if (!device) throw std::runtime_error("Can't initialize irrlicht device"); // Check!!
+
+        device->setWindowCaption(L"window - Irrlicht demo");    // Title
+        camera_ = sceneMan_->addCameraSceneNodeFPS();           // Add camera (first person)!
+
+        device_->getFileSystem()->changeWorkingDirectoryTo("GameEngine-Irrlicht");
+        configureViewport();
+    }
+
+    // Match the viewport to the physical surface of the Retina/HiDPI.
+    void GFXDevice_t::configureViewport()
+    {
+        irr::core::dimension2du const& size { videoDriver_->getScreenSize() };
+
+        #ifdef __APPLE__
+            constexpr GLsizei scale = 2;
+        #else
+            constexpr GLsizei scale = 1;
+        #endif
+
+        glViewport(
+            0,
+            0,
+            static_cast<GLsizei>(size.Width) * scale,
+            static_cast<GLsizei>(size.Height) * scale
+        );
+    }
 
     irr::scene::ISceneNode& GFXDevice_t::
     createSphere(std::string_view texture_path)

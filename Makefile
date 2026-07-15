@@ -8,7 +8,7 @@ OBJSUBDIRS  := $(patsubst $(SRCDIR)%,$(OBJDIR)%,$(SUBDIRS))
 ALLCPPS     := $(shell find $(SRCDIR) -type f -iname *.cpp)
 ALLOBJS     := $(patsubst $(SRCDIR)%,$(OBJDIR)%,$(patsubst %.cpp,%.o,$(ALLCPPS)))
 INCLUDEPATH := -I $(SRCDIR)
-LIBPATH 	:=
+LIBPATH 	:= -framework OpenGL
 UNAME       := $(shell uname)
 
 #Config paths

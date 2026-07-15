@@ -12,17 +12,7 @@ namespace game {
 
         using u32 = irr::u32;
 
-        explicit GFXDevice_t(u32 w, u32 h)
-        : width_{w}, height_{h}
-        {   
-            irr::IrrlichtDevice* device { device_.get() };
-            if (!device) throw std::runtime_error("Can't initialize irrlicht device"); // Check!!
-
-            device->setWindowCaption(L"window - Irrlicht demo");    // Title
-            camera_ = sceneMan_->addCameraSceneNodeFPS();     // Add camera (first person)!
-
-            device_->getFileSystem()->changeWorkingDirectoryTo("GameEngine-Irrlicht");
-        }
+        explicit GFXDevice_t(u32 w, u32 h);
 
         bool run() const  { return device_->run();      }
         void beginScene() { videoDriver_->beginScene(true, true, irr::video::SColor(255,100,101,140)); } // The beginScene call clears the screen with a color and the depth buffer
@@ -34,9 +24,11 @@ namespace game {
         }
 
         void addStaticText(){ guiEnv_->addStaticText(L"Irrlicht game!!", irr::core::rect<irr::s32>(10, 10, 260, 22), true); }
-        irr::scene::ISceneNode&        createSphere(std::string_view texture_path);
-        irr::scene::ITerrainSceneNode& createTerrain(std::string_view map_path, std::string_view texture_path);    
-        irr::scene::ICameraSceneNode&  getCamera() noexcept { return *camera_; }
+        
+        irr::scene::ISceneNode&         createSphere(std::string_view texture_path);
+        irr::scene::ITerrainSceneNode&  createTerrain(std::string_view map_path, std::string_view texture_path);    
+        irr::scene::ICameraSceneNode&   getCamera()            noexcept { return *camera_; }
+        irr::video::IVideoDriver const& getVideoDriver() const noexcept { return *videoDriver_; }
 
     private:
 
@@ -64,7 +56,10 @@ namespace game {
         irr::video::IVideoDriver * const videoDriver_ { device_.get()? device_->getVideoDriver()    : nullptr };
         irr::scene::ISceneManager* const sceneMan_    { device_.get()? device_->getSceneManager()   : nullptr };
         irr::gui::IGUIEnvironment* const guiEnv_      { device_.get()? device_->getGUIEnvironment() : nullptr };
-        irr::scene::ICameraSceneNode* camera_         { nullptr }; 
+        irr::scene::ICameraSceneNode*    camera_      { nullptr }; 
+
+        // Match the viewport to the physical surface of the Retina/HiDPI.
+        void configureViewport();
     };
 
     } // namespace irrinterface
